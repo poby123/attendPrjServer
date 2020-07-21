@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2&family=Nanum+Gothic&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <nav>
+    <h3>Manmin Youth</h3>
+    <ul>
+      <li><a href="/admin/editUser">앱 사용자 편집</a></li>
+      <li><a href="/admin/editClassMember">기관원 목록 편집</a></li>
+      <li><a href="/admin/view">데이터 보기</a></li>
+      <li><a href="./admin/signout">로그아웃</a></li>
+    </ul>
+  </nav>
+  <section class="content">
+
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/02656a2617.js"></script>
+  <script type="text/javascript">
+    let msg = '<%=msg%>';
+    if(msg !== '') alert(msg);
+  </script>
+</body>
+</html>

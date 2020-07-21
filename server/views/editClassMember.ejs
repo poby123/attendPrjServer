@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2&family=Nanum+Gothic&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <nav>
+    <h3>Manmin Youth</h3>
+    <ul>
+      <li><a href="/admin/editUser">앱 사용자 편집</a></li>
+      <li><a href="/admin/editClassMember">기관원 목록 편집</a></li>
+      <li><a href="/admin/view">데이터 보기</a></li>
+      <li><a href="/admin/signout">로그아웃</a></li>
+    </ul>
+  </nav>
+  <section class="content">
+    <h2>기관원 추가</h2>
+    <form class="editClassMember-add" action="/admin/editClassMember/add" method="post">
+      <input type="text" name="name" placeholder="name">
+      <input type="text" name="grade" placeholder="grade">
+      <input type="text" name="class" placeholder="class">
+      <button type="submit" name="button">추가 저장하기</button>
+    </form>
+    <br>
+    <h2>기관원 수정(이름은 수정 불가합니다. 원하시는 분은 삭제 후 추가해주세요)</h2>
+    <form class="" action="/admin/editClassMember" method="get">
+      <select name="grade" id="gradeBox">
+        <option value="">선교회</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <select name="class">
+        <option value="">기관</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+      </select>
+      <button type="submit">조회</button>
+    </form>
+    <form class="editUser-modify" action="/admin/editClassMember" method="post">
+      <table>
+        <th>name</th>
+        <th>grade</th>
+        <th>class</th>
+        <%
+        for(let i=0;i<results.length;i++){
+      %>
+        <tr>
+          <td><%=results[i].name%></td>
+          <td><input type="text" name="<%=results[i].name%>grade" value="<%=results[i].grade%>"></td>
+          <td><input type="text" name="<%=results[i].name%>class" value="<%=results[i].class%>"></td>
+          <td><a class="deleteButton" id="<%=results[i].name%>">삭제</a></td>
+        </tr>
+        <%
+        }
+      %>
+      </table>
+      <button type="submit" name="button">저장</button>
+    </form>
+  </section>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/02656a2617.js"></script>
+  <script type="text/javascript">
+    let msg = '<%=msg%>';
+    if (msg !== '') alert(msg);
+
+    $('.deleteButton').click(function() {
+      let id = $(this).attr('id');
+      if (confirm('저장을 누르지 않고 확인을 누르시는 경우, 변경한 값이 저장되지 않고 초기화 됩니다. ' +
+          id + '님을 정말로 삭제하시겠습니까? 취소를 누르시면 취소됩니다.')) {
+        location.href = "/admin/editClassMember/delete?target=" + id;
+      } else {
+        return;
+      }
+    });
+
+    let selectedGrade = getParameterByName('grade');
+    // $('#gradeBox option:eq(' + selectedGrade  + ')').attr('test', "selected");
+    $('#gradeBox option:eq('+selectedGrade+')').attr('selected', "selected");
+
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+  </script>
+</body>
+
+</html>

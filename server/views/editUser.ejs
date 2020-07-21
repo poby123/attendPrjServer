@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2&family=Nanum+Gothic&display=swap" rel="stylesheet">
+</head>
+
+<body class="edit-body">
+  <nav class="edit-nav">
+    <div class="edit-nav-container">
+      <h2 id="title">Manmin Youth</h3>
+      <ul>
+        <li><a href="/admin/editUser">앱 사용자 편집</a></li>
+        <li><a href="/admin/editClassMember">기관원 목록 편집</a></li>
+        <li><a href="/admin/view">데이터 보기</a></li>
+        <li><a href="/admin/signout">로그아웃</a></li>
+      </ul>
+    </div>
+  </nav>
+  <section class="edit-content">
+    <div class="edit-content-container">
+      <h3>앱 사용자 추가</h2>
+      <form class="editUser-add" action="/admin/editUser/add" method="post">
+        <select name="grade">
+          <option value="">선교회</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <br>
+        <select name="class">
+          <option value="">기관</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+        </select>
+        <br>
+        <input type="text" name="username" placeholder="name"><br>
+        <input type="text" name="auth" placeholder="auth"><br>
+        <button type="submit" name="button">추가 저장하기</button>
+      </form>
+    </div>
+    <div class="edit-content-container">
+      <h3>앱 사용자 수정</h2>
+      <form class="editUser-modify" action="/admin/editUser" method="post">
+        <table>
+          <th>이름</th>
+          <th>선교회</th>
+          <th>기관</th>
+          <th>권한</th>
+          <th>-</th>
+          <%
+          for(let i=0;i<results.length;i++){
+        %>
+          <tr>
+            <td><%=results[i].username%></td>
+            <td><input type="text" name="<%=results[i].username%>grade" value="<%=results[i].grade%>"></td>
+            <td><input type="text" name="<%=results[i].username%>class" value="<%=results[i].class%>"></td>
+            <td><input type="text" name="<%=results[i].username%>auth" value="<%=results[i].auth%>"></td>
+            <td><a class="deleteButton" id="<%=results[i].username%>"><i class="fas fa-user-minus"></i></a></td>
+          </tr>
+          <%
+          }
+        %>
+        </table>
+        <button type="submit" name="button">저장</button>
+      </form>
+    </div>
+  </section>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/02656a2617.js"></script>
+  <script type="text/javascript">
+    let msg = '<%=msg%>';
+    if (msg !== '') alert(msg);
+
+    $('.deleteButton').click(function() {
+      let id = $(this).attr('id');
+      if (confirm('저장을 누르지 않고 확인을 누르시는 경우, 변경한 값이 저장되지 않고 초기화 됩니다. ' +
+          id + '님을 정말로 삭제하시겠습니까? 취소를 누르시면 취소됩니다.')) {
+        location.href = "/admin/editUser/delete?target=" + id;
+      } else {
+        return;
+      }
+    });
+  </script>
+</body>
+
+</html>
