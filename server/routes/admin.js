@@ -1,3 +1,8 @@
+/*
+
+  The Admin Router For only Administor's Signin, Signout, Member Editing.
+
+*/
 var express = require('express');
 var mysql = require('mysql');
 const session = require('express-session');
