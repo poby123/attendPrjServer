@@ -6,6 +6,7 @@
 var express = require('express');
 var mysql = require('mysql');
 const session = require('express-session');
+var xl = require('excel4node'); /*https://www.npmjs.com/package/excel4node*/
 var router = express.Router();
 
 const dbConfig = require('../config/database.js');
@@ -14,6 +15,7 @@ const sessionAuth = require('../config/session.js');
 const connection = mysql.createPool(dbConfig);
 
 const adminAuth = 4;
+const writerAuth = 1;
 
 router.use(session(sessionAuth));
 
@@ -21,6 +23,128 @@ router.use(session(sessionAuth));
 router.get('/', (req, res, next) => {
   res.redirect('/');
 });
+
+function(grade){
+
+}
+
+/*
+  Get save excel data
+*/
+router.get('/excel', (req, res, next)=>{
+  if(req.session.auth >= adminAuth){
+
+  }else{
+    res.redirect('/');
+  }
+//   let wb = new xl.Workbook();
+//
+//   var ws = wb.addWorksheet('Sheet 1');
+//   // Create a reusable style
+// var style = wb.createStyle({
+//   font: {
+//     color: '#FF0800',
+//     size: 12,
+//   },
+//   numberFormat: '$#,##0.00; ($#,##0.00); -',
+// });
+//
+// // Set value of cell A1 to 100 as a number type styled with paramaters of style
+// ws.cell(1, 1)
+//   .number(100)
+//   .style(style);
+//
+// // Set value of cell B1 to 200 as a number type styled with paramaters of style
+// ws.cell(1, 2)
+//   .number(200)
+//   .style(style);
+//
+// // Set value of cell C1 to a formula styled with paramaters of style
+// ws.cell(1, 3)
+//   .formula('A1 + B1')
+//   .style(style);
+//
+// // Set value of cell A2 to 'string' styled with paramaters of style
+// ws.cell(2, 1)
+//   .string('string')
+//   .style(style);
+//
+// // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
+// ws.cell(3, 1)
+//   .bool(true)
+//   .style(style)
+//   .style({font: {size: 14}});
+//
+// wb.write('Excel.xlsx');
+
+});
+
+
+/////////////////////////////////// View Data Start //////////////////////////////////////////////
+
+router.get('/view', (req, res, next) => {
+  if (req.session.auth >= writerAuth) {
+    let date = new Date();
+    const current = {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      date: date.getDate(),
+    } //current value end
+    let targetGrade = 1;
+    let targetClass = 0;
+    let targetYear = current.year;
+    let targetMonth = current.month;
+    let targetDate = current.date;
+    console.log('grade : ' , req.query.grade);
+    console.log('class : ' , req.query.class);
+
+    if (req.query.grade != '' && req.query.grade != undefined) {
+      console.log('error occured');
+      targetGrade = req.query.grade;
+    }
+    if (req.query.class != '' && req.query.class != undefined) {
+      targetClass = req.query.class;
+    }
+    if (req.query.date != '' && req.query.date != undefined) {
+      let d = new Date(req.query.date);
+      targetYear = d.getFullYear();
+      targetMonth = d.getMonth() + 1;
+      targetDate = d.getDate();
+    }
+
+    if (targetClass === 0) { //get grade data
+      connection.query(`SELECT * FROM tblTotal WHERE grade=? AND
+      YEAR(regDate)=? AND MONTH(regDate)=? AND DAY(regDate)=? ORDER BY regDate`,
+        [targetGrade, targetYear, targetMonth, targetDate], (err, results) => {
+          if (err) {
+            console.log(err);
+          }
+          res.render('view', {
+            title: 'View',
+            msg: "",
+            results: results,
+          });
+        }); //query end
+    }else{ //get class data
+      connection.query(`SELECT * FROM tblTotal WHERE grade=? AND class=? AND
+      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate`,
+        [targetGrade, targetClass, targetYear, targetMonth], (err, results) => {
+          if (err) {
+            console.log(err);
+          }
+          res.render('view', {
+            title: 'View',
+            msg: "",
+            results: results,
+          });
+        }); //query end
+    }
+  } else {
+    res.redirect('/');
+  }
+});
+
+/////////////////////////////////// View Data End //////////////////////////////////////////////
 
 /////////////////////////////////// Sign in, out Start //////////////////////////////////////////////
 
@@ -42,7 +166,7 @@ router.post('/signin', (req, res, next) => {
       // console.log(results.length);
       if (err) {
         console.log(err);
-      } else if (results.length == 1 && results[0].auth === 4) {
+      } else if (results.length == 1 && results[0].auth >= writerAuth) {
         req.session.username = results[0].username;
         req.session.auth = results[0].auth;
         req.session.save(function() {
@@ -67,7 +191,7 @@ router.post('/signin', (req, res, next) => {
  *
  ***********************/
 router.get('/signout', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth) {
     req.session.destroy((err) => {
       if (err) {
         console.log(err);
@@ -81,7 +205,7 @@ router.get('/signout', (req, res, next) => {
 });
 ////////////////////////////////////// Sign in, out Router End///////////////////////////////////////////
 
-///////////////////////////////////// Edit User Start ////////////////////////////////////////////
+///////////////////////////////////////// Edit User Start ////////////////////////////////////////////
 /*****************
  **
  *
@@ -106,10 +230,7 @@ router.get('/editUser', (req, res, next) => {
       }
     });
   } else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
@@ -148,12 +269,8 @@ router.post('/editUser', (req, res, next) => {
     });
 
   } else {
-    console.log('fail');
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
-  }
+      res.render('index', {title : 'Manmin Youth', msg : "권한이 없거나 로그아웃 상태입니다."});
+    }
 });
 
 /*****************
@@ -179,10 +296,7 @@ router.get('/editUser/delete', (req, res, next) => {
       });
     }
   } else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
@@ -212,14 +326,11 @@ router.post('/editUser/add', (req, res, next) => {
     } //admin add check end
   } //session check end
   else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
-////////////////////////////////////Edit User End/////////////////////////////////////////////
+///////////////////////////////////////////Edit User End/////////////////////////////////////////////
 
 ///////////////////////////////////// Edit Class Member Start ////////////////////////////////////////////
 /*****************
@@ -234,7 +345,7 @@ router.get('/editClassMember', (req, res, next) => {
     let selectedGrade = req.query.grade;
     let selectedClass = req.query.class;
     if (selectedGrade === '') selectedGrade = 1;
-    if(selectedClass === '') selectedClass = 1;
+    if (selectedClass === '') selectedClass = 1;
 
     connection.query('SELECT * FROM tblAttend where grade=? and class=?', [selectedGrade, selectedClass],
       (err, results) => {
@@ -254,10 +365,7 @@ router.get('/editClassMember', (req, res, next) => {
         }
       });
   } else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
@@ -295,18 +403,14 @@ router.post('/editClassMember', (req, res, next) => {
     });
 
   } else {
-    console.log('fail');
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
 /*****************
  **
  *
- * Edit User Delete Router
+ * Edit Class Member Delete Router
  *
  *
  ***********************/
@@ -321,17 +425,14 @@ router.get('/editClassMember/delete', (req, res, next) => {
       }
     });
   } else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 
 /*****************
  **
  *
- * Edit User ADD Router
+ * Edit Class Member ADD Router
  *
  *
  ***********************/
@@ -351,10 +452,7 @@ router.post('/editClassMember/add', (req, res, next) => {
       });
   } //session check end
   else {
-    res.render('login', {
-      title: 'Sigin in',
-      msg: "로그인이 필요한 서비스입니다."
-    });
+    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
   }
 });
 

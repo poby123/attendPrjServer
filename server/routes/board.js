@@ -1,6 +1,6 @@
 /*
 
-  The Board Router for sending tblAttend to client and saving reqest data.
+  The Board Router for sending tblAttend to client and saving request data.
 
 */
 var express = require('express');
@@ -15,105 +15,176 @@ const connection = mysql.createPool(dbConfig);
 
 router.use(session(sessionAuth));
 
-/*
-  GET Attend Board Data
-*/
+/*******************
+
+  Send Attend Board data to Client
+
+*********************/
 router.get('/', (req, res, next) => {
   console.log('/board router is called!');
   console.log(req.session.username);
-  if(req.session.username){
-    connection.query('SELECT * FROM tblAttend where class = ?', [req.session.class], (err, results) =>{
-      if(err) {
-        console.log(err);
-        let data = {result : false};
-        res.json(data);
-      }
-      else{
-        let data = {
-          result : true,
-          table : results,
-        }
-        res.json(data);
-      }
-    });
-  }else{
+  if (req.session.username) {
+    if (req.session.auth === 1) { //기관장단
+      connection.query('SELECT * FROM tblAttend where class = ?', [req.session.class], (err, results) => {
+        if (err) {
+          console.log(err);
+          let data = {
+            result: false
+          };
+          res.json(data);
+        } else {
+          let data = {
+            result: true,
+            table: results,
+          }
+          res.json(data);
+        } // else end
+      }); //query end
+    } //if end
+    else if (req.session.auth > 1) { //선교회 회장단
+      connection.query('SELECT * FROM tblAttend where grade = ?', [req.session.grade], (err, results) => {
+        if (err) {
+          console.log(err);
+          let data = {
+            result: false
+          };
+          res.json(data);
+        } else {
+          let data = {
+            result: true,
+            table: results,
+          }
+          res.json(data);
+        } // else end
+      }); //query end
+    } //else if req.session.auth > 1 end
+  } else {
     console.log('username session does not exist!');
     let data = {
-      result : false,
+      result: false,
     }
     res.json(data);
   }
   // console.log(data);
 });
 
-/*
-  Update to Requset Data
-*/
-router.put('/save', (req, res, next) => {
-  let data = {result : true};
 
-  if(req.session.username){
-    console.log(req.body);
-    for(let i=0;i<req.body.length;i++){
-      connection.query('UPDATE tblAttend SET tue=?, meeting=? where name=?',
-      [req.body[i][1], req.body[i][2], req.body[i][0]], (err, result) =>{
-        if(err){
-          data.result = false;
-        }
-      });
-    }
+/*******************
+
+  Save Requseted Data
+
+*********************/
+router.put('/save', (req, res, next) => {
+  let data = {
+    result: true
+  };
+  const current = {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    date: date.getDate(),
+    day : date.day(); //0은 일요일
+  } //current value end
+
+  //block saving other day
+  if(current.day !== 0){
+    data.result = false;
     res.json(data);
-  }else{
+  }
+
+  else if (req.session.username) {
+    console.log(req.body);
+    let date = new Date();
+    let endUpdate = false;
+
+    for (let i = 0; i < req.body.length; i++) {
+      //update tblAttend
+      connection.query('UPDATE tblAttend SET meeting=?,tue=? where name=?',
+        [req.body[i][1], req.body[i][2], req.body[i][0]], (err, updateAttendResult) => {
+          if (err) {
+            data.result = false;
+            console.log(err);
+          }else{
+            if(i === req.body.length - 1){ //if it is last loop update or insert to tblTotal
+              //check to make a decision do insert or update tblTotal
+              connection.query(`SELECT COUNT(*) FROM tblTotal WHERE grade=? AND class=?
+              AND YEAR(regDate)=? AND MONTH(regDate)=? AND DAY(regDate)=?`,
+                [req.session.grade, req.session.class, current.year, current.month, current.date],
+                (err, checkExistResult) => {
+                  if (err) {
+                    console.log(err);
+                    data.result = false;
+                  } else {
+                    let numTue = 0;
+                    let numMeeting = 0;
+
+                    //get sum of tue and meeting data
+                    connection.query(`
+                    SELECT * FROM tblattend WHERE grade=? AND class=?`,
+                      [req.session.grade, req.session.class],
+                      (err, results) => {
+                        if (err) {
+                          console.log(err);
+                          data.result = false;
+                        } else {
+                          for (let i = 0; i < results.length; i++) {
+                            if (results[i].tue === 1) {
+                              numTue++;
+                            }
+                            if (results[i].meeting === 1) {
+                              numMeeting++;
+                            }
+                          } //for end
+
+                          console.log('numTue : ', numTue, " numMeeting : ", numMeeting);
+
+                          //if there is no data, insert into table
+                          if (checkExistResult[0]['COUNT(*)'] === 0) {
+                            console.log('In Insert numTue : ', numTue, " numMeeting : ", numMeeting);
+
+                            connection.query(`INSERT INTO tblTotal(grade, class, regDate, tue, meeting)
+                            VALUES(?,?,NOW(),?,?)`,
+                              [req.session.grade, req.session.class, numTue, numMeeting],
+                              (err, insertResult) => {
+                                if (err) {
+                                  data.result = false;
+                                  console.log(err, ' in insert tblTotal');
+                                }
+                              });
+                          } //if not exist end
+
+                          //if there is data, update table
+                          else {
+                            console.log('In Update numTue : ', numTue, " numMeeting : ", numMeeting);
+
+                            connection.query(`UPDATE tbltotal SET tue=?, meeting=?
+                              WHERE grade=? AND class=? AND
+                              YEAR(regdate)=? AND MONTH(regdate)=? AND DAY(regdate)=?`,
+                              [numTue, numMeeting, req.session.grade, req.session.class,
+                                current.year, current.month, current.date
+                              ],
+                              (err, insertResult) => {
+                                if (err) {
+                                  data.result = false;
+                                  console.log(err, ' in update tblTotal');
+                                }
+                              });
+                          } //else exist end
+
+                        } //err else end
+                      }); //get sum of tue and meeting data query end
+                  } //not occured err end
+                }); //check to make a decision query end
+            } //data.result == true end
+
+          } //else err end
+        }); //update tblattend query end
+    }//for end
+    res.json(data);
+  } else {
     console.log('username session does not exist!');
     res.json(data);
   }
 });
 
-//sign in
-// router.get('/sigin', (req, res, next) => {
-//
-// });
-// router.post('/signin', (req, res, next) => {
-//   let username = req.body.username;
-//   let password = req.body.password;
-//   console.log(username);
-//   console.log(password);
-//   connection.query('SELECT * FROM tbluser where username=? and userpass=?', [username, password],
-//   function(err, results){
-//     let val = {result : false};
-//     console.log(results.length);
-//     if(err){
-//       console.log(err);
-//     }
-//     else if(results.length == 1){
-//       val.result = true;
-//       req.session.username = results[0].username;
-//       req.session.grade = results[0].grade;
-//       req.session.class = results[0].class;
-//       req.session.auth = results[0].auth;
-//       req.session.save(function() {
-//         console.log('login Success!, name: ', results[0].username);
-//       });
-//       res.json(val);
-//     }else{
-//       console.log('not found');
-//       res.json(val);
-//     }
-//   });
-// });
-//
-// //signout
-// router.get('/signout', (req, res, next) => {
-//   if(req.session.username){
-//     req.session.destroy((err) => {
-//       if(err){
-//         console.log(err);
-//       }else{
-//         req.session;
-//         console.log('signout success');
-//       }
-//     });
-//   }
-// });
 
 module.exports = router;

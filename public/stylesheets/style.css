@@ -154,6 +154,9 @@ a:hover, button:hover{
   line-height: 3em;
   width : 100px;
 }
+/*.edit-content-container th, td, tr{
+  border : 1px solid gray;
+}*/
 .edit-content-container button{
   margin-top: 2em;
   margin-bottom: 2em;

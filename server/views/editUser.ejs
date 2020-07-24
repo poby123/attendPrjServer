@@ -89,7 +89,10 @@
   <script src="https://kit.fontawesome.com/02656a2617.js"></script>
   <script type="text/javascript">
     let msg = '<%=msg%>';
-    if (msg !== '') alert(msg);
+    if (msg !== '') {
+      alert(msg);
+      msg = '';
+    }
 
     $('.deleteButton').click(function() {
       let id = $(this).attr('id');
@@ -100,6 +103,7 @@
         return;
       }
     });
+
   </script>
 </body>
 

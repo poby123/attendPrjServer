@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2&family=Nanum+Gothic&display=swap" rel="stylesheet">
+</head>
+
+<body class="edit-body">
+  <nav class="edit-nav">
+    <div class="edit-nav-container">
+      <h2 id="title">Manmin Youth</h3>
+        <ul>
+          <li><a href="/admin/editUser">앱 사용자 편집</a></li>
+          <li><a href="/admin/editClassMember">기관원 목록 편집</a></li>
+          <li><a href="/admin/view">데이터 보기</a></li>
+          <li><a href="/admin/signout">로그아웃</a></li>
+        </ul>
+    </div>
+  </nav>
+  <section class="edit-content">
+    <div class="edit-content-container">
+      <form action="/admin/view" method="get">
+        <input type="date" id="start" name="date" min="2020-01-01" max="2048-12-31">
+        <select name="grade" id='gradeBox'>
+          <option value="">선교회</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        <br>
+        <select name="class">
+          <option value="">기관</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+        </select>
+        <br>
+        <button type="submit">조회</button>
+      </form>
+      <h3>데이터</h2>
+        <table id="mainTable">
+          <th>date</th>
+          <th>선교회</th>
+          <th>기관</th>
+          <th>sun</th>
+          <th>tue</th>
+          <%
+          let sumMeeting = 0;
+          let sumTue = 0;
+          for(let i=0;i<results.length;i++){
+            /*parse date*/
+            let date = ''+results[i].regDate;
+            date = date.substring(4, 16);
+
+            /*sum*/
+            sumMeeting += results[i].meeting;
+            sumTue += results[i].tue;
+        %>
+          <tr>
+            <td><%=date%></td>
+            <td><%=results[i].grade%></td>
+            <td><%=results[i].class%></td>
+            <td><%=results[i].meeting%></td>
+            <td><%=results[i].tue%></td>
+          </tr>
+          <%
+          }
+        %>
+          <tr>
+            <td>합계</td>
+            <td></td>
+            <td></td>
+            <td><%=sumMeeting%></td>
+            <td><%=sumTue%></td>
+          </tr>
+        </table>
+        <iframe id="txtArea1" style="display:none"></iframe>
+        <button onclick="ReportToExcelConverter()" style="width:200px">excel 다운</button>
+    </div>
+  </section>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/02656a2617.js"></script>
+  <script src="/javascripts/jquery.table2excel.js" charset="utf-8"></script>
+  <script type="text/javascript">
+    let msg = '<%=msg%>';
+    if (msg !== '') {
+      alert(msg);
+      msg = '';
+    }
+
+    function ReportToExcelConverter() {
+      const d = new Date();
+      $("#mainTable").table2excel({
+        exclude: ".noExl",
+        name: "Excel Document Name",
+        filename: d.getMonth() + 1 + "월 자료" + '.xls', //확장자를 여기서 붙여줘야한다.
+        fileext: ".xls",
+        exclude_img: true,
+        exclude_links: true,
+        exclude_inputs: true
+      });
+    };
+
+
+    $('.deleteButton').click(function() {
+      let id = $(this).attr('id');
+      if (confirm('저장을 누르지 않고 확인을 누르시는 경우, 변경한 값이 저장되지 않고 초기화 됩니다. ' +
+          id + '님을 정말로 삭제하시겠습니까? 취소를 누르시면 취소됩니다.')) {
+        //location.href = "/admin/editUser/delete?target=" + id;
+      } else {
+        return;
+      }
+    });
+
+    let selectedGrade = getParameterByName('grade');
+    // $('#gradeBox option:eq(' + selectedGrade  + ')').attr('test', "selected");
+    $('#gradeBox option:eq(' + selectedGrade + ')').attr('selected', "selected");
+
+    function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+  </script>
+</body>
+
+</html>
