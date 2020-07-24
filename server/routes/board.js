@@ -82,16 +82,16 @@ router.put('/save', (req, res, next) => {
     year: date.getFullYear(),
     month: date.getMonth() + 1,
     date: date.getDate(),
-    day : date.day(); //0은 일요일
+    day : date.day(), //0은 일요일
   } //current value end
 
   //block saving other day
-  if(current.day !== 0){
+  /*if(current.day !== 0){
     data.result = false;
     res.json(data);
-  }
+  }*/
 
-  else if (req.session.username) {
+  /*else */if (req.session.username) {
     console.log(req.body);
     let date = new Date();
     let endUpdate = false;

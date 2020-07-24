@@ -55,45 +55,92 @@
         <br>
         <button type="submit">조회</button>
       </form>
-      <h3>데이터</h2>
-        <table id="mainTable">
-          <th>date</th>
-          <th>선교회</th>
-          <th>기관</th>
-          <th>sun</th>
-          <th>tue</th>
-          <%
-          let sumMeeting = 0;
-          let sumTue = 0;
-          for(let i=0;i<results.length;i++){
-            /*parse date*/
-            let date = ''+results[i].regDate;
-            date = date.substring(4, 16);
+        <%
 
-            /*sum*/
-            sumMeeting += results[i].meeting;
-            sumTue += results[i].tue;
+        if(results.length > 0){
+
+          let classNum = 0;
+          let firstClass = results[0].class;
+          let d = new Date(results[0].regDate);
+          let month = d.getMonth() + 1;
+
+          for(let i=1;i<results.length;i++){
+            if(results[i].class === firstClass){
+              classNum = i;
+              break;
+            }
+          }
         %>
+        <h3><%=month%>월 데이터</h3>
+        <table id="mainTable">
+          <tbody>
+          <!-- Draw Table header -->
+          <th>낮모임 인원</th>
+          <%
+            for(let i=0;i<classNum;i++){
+          %>
+          <th><%=results[0].class+i%>기관</th>
+          <%
+          }
+          %>
+            <th>합계</th>
+          <%
+          for(let i=0;i<results.length/classNum;i++){ //주차
+            let sum = 0;
+          %>
           <tr>
-            <td><%=date%></td>
-            <td><%=results[i].grade%></td>
-            <td><%=results[i].class%></td>
-            <td><%=results[i].meeting%></td>
-            <td><%=results[i].tue%></td>
+            <td><%=i+1%>주차</td>
+            <%
+              for(let j=0;j<classNum;j++){
+                sum += results[classNum*i+j].meeting;
+            %>
+            <td><%=results[classNum*i+j].meeting%></td>
+            <%
+              }
+            %>
+            <td><%=sum%></td>
           </tr>
           <%
           }
+          %>
+        </tbody>
+        <tbody>
+        <!-- Draw Table header -->
+        <th>화찬 인원</th>
+        <%
+          for(let i=0;i<classNum;i++){
         %>
-          <tr>
-            <td>합계</td>
-            <td></td>
-            <td></td>
-            <td><%=sumMeeting%></td>
-            <td><%=sumTue%></td>
-          </tr>
+        <th><%=results[0].class+i%>기관</th>
+        <%
+        }
+        %>
+          <th>합계</th>
+        <%
+        for(let i=0;i<results.length/classNum;i++){ //주차
+          let sum = 0;
+        %>
+        <tr>
+          <td><%=i+1%>주차</td>
+          <%
+            for(let j=0;j<classNum;j++){
+              sum += results[classNum*i+j].tue;
+          %>
+          <td><%=results[classNum*i+j].tue%></td>
+          <%
+            }
+          %>
+          <td><%=sum%></td>
+        </tr>
+        <%
+        }
+        %>
+      </tbody>
         </table>
         <iframe id="txtArea1" style="display:none"></iframe>
         <button onclick="ReportToExcelConverter()" style="width:200px">excel 다운</button>
+        <%}else{%>
+          <h5>데이터가 존재하지 않습니다.</h5>
+        <%}%>
     </div>
   </section>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>

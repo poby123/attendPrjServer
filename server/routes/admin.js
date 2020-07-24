@@ -24,62 +24,6 @@ router.get('/', (req, res, next) => {
   res.redirect('/');
 });
 
-function(grade){
-
-}
-
-/*
-  Get save excel data
-*/
-router.get('/excel', (req, res, next)=>{
-  if(req.session.auth >= adminAuth){
-
-  }else{
-    res.redirect('/');
-  }
-//   let wb = new xl.Workbook();
-//
-//   var ws = wb.addWorksheet('Sheet 1');
-//   // Create a reusable style
-// var style = wb.createStyle({
-//   font: {
-//     color: '#FF0800',
-//     size: 12,
-//   },
-//   numberFormat: '$#,##0.00; ($#,##0.00); -',
-// });
-//
-// // Set value of cell A1 to 100 as a number type styled with paramaters of style
-// ws.cell(1, 1)
-//   .number(100)
-//   .style(style);
-//
-// // Set value of cell B1 to 200 as a number type styled with paramaters of style
-// ws.cell(1, 2)
-//   .number(200)
-//   .style(style);
-//
-// // Set value of cell C1 to a formula styled with paramaters of style
-// ws.cell(1, 3)
-//   .formula('A1 + B1')
-//   .style(style);
-//
-// // Set value of cell A2 to 'string' styled with paramaters of style
-// ws.cell(2, 1)
-//   .string('string')
-//   .style(style);
-//
-// // Set value of cell A3 to true as a boolean type styled with paramaters of style but with an adjustment to the font size.
-// ws.cell(3, 1)
-//   .bool(true)
-//   .style(style)
-//   .style({font: {size: 14}});
-//
-// wb.write('Excel.xlsx');
-
-});
-
-
 /////////////////////////////////// View Data Start //////////////////////////////////////////////
 
 router.get('/view', (req, res, next) => {
@@ -99,7 +43,6 @@ router.get('/view', (req, res, next) => {
     console.log('class : ' , req.query.class);
 
     if (req.query.grade != '' && req.query.grade != undefined) {
-      console.log('error occured');
       targetGrade = req.query.grade;
     }
     if (req.query.class != '' && req.query.class != undefined) {
@@ -114,8 +57,8 @@ router.get('/view', (req, res, next) => {
 
     if (targetClass === 0) { //get grade data
       connection.query(`SELECT * FROM tblTotal WHERE grade=? AND
-      YEAR(regDate)=? AND MONTH(regDate)=? AND DAY(regDate)=? ORDER BY regDate`,
-        [targetGrade, targetYear, targetMonth, targetDate], (err, results) => {
+      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate ASC, class ASC`,
+        [targetGrade, targetYear, targetMonth], (err, results) => {
           if (err) {
             console.log(err);
           }
