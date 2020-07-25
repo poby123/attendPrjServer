@@ -44,6 +44,8 @@ router.post('/signin', (req, res, next) => {
         req.session.grade = results[0].grade;
         req.session.class = results[0].class;
         req.session.auth = results[0].auth;
+        req.session.isApp = true; //set flag who signin using application.
+        console.log('isApp : ', req.session.isApp);
         req.session.save(function() {
           console.log('login Success!, name: ', results[0].username);
         });

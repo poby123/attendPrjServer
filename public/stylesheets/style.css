@@ -92,10 +92,7 @@ a:hover, button:hover{
   height: 100vh;
 }
 .edit-nav{
-  flex:1;
-  justify-content: center;
-  align-items: center;
-  border-right : 1px solid gray;
+  padding-top: 0.5em;
 }
 .edit-nav li{
   line-height: 2em;
@@ -103,18 +100,44 @@ a:hover, button:hover{
   margin-right: 2em;
 }
 .edit-nav-container{
-  display: flex;
-  align-items: center;
-  /* border : 1px solid blue; */
-  max-width: 1200px;
+  display: block;
+  max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
+}
+#title{
+  font-family: 'Baloo Da 2', cursive;
+}
+#toggle{
+  font-size: 25px;
+  background: none;
+}
+.edit-nav-container ul{
+  max-width: inherit;
+  border : 1px solid var(--text-color);
+  display: none;
+  background-color: var(--theme-color);
+  color : var(--text-color);
+}
+.edit-nav-container li{
+  display: block;
+  text-align: right;
+  font-family: 'Nanum Gothic', sans-serif;
+  line-height: 2em;
+  /* border-bottom : solid white 1px; */
+}
+.small-nav-container{
+  display: flex;
+  justify-content: space-between;
+  padding-left: 1em;
+  padding-right : 1em;
 }
 .edit-content{
   display: flex;
   flex-direction: column;
-  border : 1px solid red;
+  /* border : 1px solid red; */
   align-items: center;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 .edit-content-container{
   padding : 5vh 5vw;

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2&family=Nanum+Gothic&display=swap" rel="stylesheet">
+</head>
+<body class="edit-body">
+  <nav class="edit-nav">
+    <div class="edit-nav-container">
+      <div class="small-nav-container">
+        <h2 id="title"><a href="/">Manmin Youth</a></h2>
+        <button type="button" id="toggle"><i class="fas fa-bars"></i></button>
+      </div>
+      <ul class="toggleTarget">
+        <%
+        if(menu.length > 0){
+          for(let i=0;i<menu.length;i++){%>
+          <li><a href="<%=menu[i].navLink%>"><%=menu[i].nav%></a></li>
+        <%}
+      }%>
+      </ul>
+    </div>
+  </nav>

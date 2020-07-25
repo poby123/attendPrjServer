@@ -16,6 +16,18 @@ const connection = mysql.createPool(dbConfig);
 
 const adminAuth = 4;
 const writerAuth = 1;
+const adminNav = [
+  {nav : "앱 사용자 편집", navLink : "/admin/editUser"},
+  {nav : "기관원 목록 편집", navLink : "/admin/editClassMember"},
+  {nav : "데이터 보기", navLink : "/board/view"},
+  {nav : "기관 출석 체크", navLink : "/board"},
+  {nav : "로그아웃", navLink : "/admin/signout"},
+];
+const userNav = [
+  {nav : "데이터 보기", navLink : "/board/view"},
+  {nav : "기관 출석 체크", navLink : "/board"},
+  {nav : "로그아웃", navLink : "/admin/signout"},
+];
 
 router.use(session(sessionAuth));
 
@@ -23,71 +35,6 @@ router.use(session(sessionAuth));
 router.get('/', (req, res, next) => {
   res.redirect('/');
 });
-
-/////////////////////////////////// View Data Start //////////////////////////////////////////////
-
-router.get('/view', (req, res, next) => {
-  if (req.session.auth >= writerAuth) {
-    let date = new Date();
-    const current = {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      date: date.getDate(),
-    } //current value end
-    let targetGrade = 1;
-    let targetClass = 0;
-    let targetYear = current.year;
-    let targetMonth = current.month;
-    let targetDate = current.date;
-    console.log('grade : ' , req.query.grade);
-    console.log('class : ' , req.query.class);
-
-    if (req.query.grade != '' && req.query.grade != undefined) {
-      targetGrade = req.query.grade;
-    }
-    if (req.query.class != '' && req.query.class != undefined) {
-      targetClass = req.query.class;
-    }
-    if (req.query.date != '' && req.query.date != undefined) {
-      let d = new Date(req.query.date);
-      targetYear = d.getFullYear();
-      targetMonth = d.getMonth() + 1;
-      targetDate = d.getDate();
-    }
-
-    if (targetClass === 0) { //get grade data
-      connection.query(`SELECT * FROM tblTotal WHERE grade=? AND
-      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate ASC, class ASC`,
-        [targetGrade, targetYear, targetMonth], (err, results) => {
-          if (err) {
-            console.log(err);
-          }
-          res.render('view', {
-            title: 'View',
-            msg: "",
-            results: results,
-          });
-        }); //query end
-    }else{ //get class data
-      connection.query(`SELECT * FROM tblTotal WHERE grade=? AND class=? AND
-      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate`,
-        [targetGrade, targetClass, targetYear, targetMonth], (err, results) => {
-          if (err) {
-            console.log(err);
-          }
-          res.render('view', {
-            title: 'View',
-            msg: "",
-            results: results,
-          });
-        }); //query end
-    }
-  } else {
-    res.redirect('/');
-  }
-});
-
-/////////////////////////////////// View Data End //////////////////////////////////////////////
 
 /////////////////////////////////// Sign in, out Start //////////////////////////////////////////////
 
@@ -111,6 +58,8 @@ router.post('/signin', (req, res, next) => {
         console.log(err);
       } else if (results.length == 1 && results[0].auth >= writerAuth) {
         req.session.username = results[0].username;
+        req.session.grade = results[0].grade;
+        req.session.class = results[0].class;
         req.session.auth = results[0].auth;
         req.session.save(function() {
           console.log('login Success!, name: ', results[0].username);
@@ -120,7 +69,7 @@ router.post('/signin', (req, res, next) => {
         console.log('not found');
         res.render('login', {
           title: 'Sigin in',
-          msg: "아이디나 비밀번호가 틀렸습니다"
+          msg: "아이디나 비밀번호가 틀렸습니다",
         });
       }
     });
@@ -160,20 +109,42 @@ router.get('/editUser', (req, res, next) => {
   if (req.session.auth === adminAuth) {
     connection.query('SELECT username, grade, class, auth FROM tbluser', (err, results) => {
       if (err) {
-        res.render('index', {
-          title: 'admin Page',
-          msg: "error is occured!"
-        });
+        if(req.session.auth === adminAuth){
+          res.render('index', {
+            title: 'admin Page',
+            msg: "error is occured!",
+            menu : adminNav
+          });
+        }
+        else{
+          res.render('index', {
+            title: 'admin Page',
+            msg: "",
+            menu : userNav
+          });
+        }
+
       } else {
-        res.render('editUser', {
-          title: 'admin Page',
-          msg: "",
-          results: results
-        });
+        if(req.session.auth === adminAuth){
+          res.render('editUser', {
+            title: 'admin Page',
+            msg: "",
+            results: results,
+            menu : adminNav,
+          });
+        }
+        else{
+          res.render('editUser', {
+            title: 'admin Page',
+            msg: "",
+            results: results,
+            menu : userNav,
+          });
+        }
       }
     });
   } else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -212,8 +183,8 @@ router.post('/editUser', (req, res, next) => {
     });
 
   } else {
-      res.render('index', {title : 'Manmin Youth', msg : "권한이 없거나 로그아웃 상태입니다."});
-    }
+    res.redirect('/');
+  }
 });
 
 /*****************
@@ -239,7 +210,7 @@ router.get('/editUser/delete', (req, res, next) => {
       });
     }
   } else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -257,7 +228,7 @@ router.post('/editUser/add', (req, res, next) => {
     } else {
       connection.query(`INSERT INTO tbluser (username, userpass, grade, class, auth)
       VALUES( ? , ? , ? , ? , ? )`,
-        [req.body.username, '1234', req.body.grade, req.body.class, req.body.auth],
+        [req.body.username, req.body.password, req.body.grade, req.body.class, req.body.auth],
         (error, results) => {
           if (error) {
             console.log(error);
@@ -269,7 +240,7 @@ router.post('/editUser/add', (req, res, next) => {
     } //admin add check end
   } //session check end
   else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -292,23 +263,44 @@ router.get('/editClassMember', (req, res, next) => {
 
     connection.query('SELECT * FROM tblAttend where grade=? and class=?', [selectedGrade, selectedClass],
       (err, results) => {
-        if (err) {
+        if (err) { //err
           console.log(err);
-          res.render('editUser', {
-            title: 'admin Page',
-            msg: "error is occured to get attend table"
-          });
-        } else {
-          // console.log(results);
-          res.render('editClassMember', {
-            title: 'admin Page',
-            msg: "",
-            results: results
-          });
+          if(req.session.auth === adminAuth){
+            res.render('editUser', {
+              title: 'admin Page',
+              msg: "error is occured to get attend table",
+              menu : adminNav,
+            });
+          }
+          else{
+            res.render('editUser', {
+              title: 'admin Page',
+              msg: "error is occured to get attend table",
+              menu : userNav,
+            });
+          }
+        } //err end
+        else {
+           if(req.session.auth === adminAuth){
+            res.render('editClassMember', {
+              title: 'admin Page',
+              msg: "",
+              results: results,
+              menu : adminNav,
+            });
+          } //no err and admin auth end
+          else{
+            res.render('editClassMember', {
+              title: 'admin Page',
+              msg: "",
+              results: results,
+              menu : userNav,
+            });
+          }
         }
       });
   } else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -346,7 +338,7 @@ router.post('/editClassMember', (req, res, next) => {
     });
 
   } else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -368,7 +360,7 @@ router.get('/editClassMember/delete', (req, res, next) => {
       }
     });
   } else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
@@ -390,12 +382,12 @@ router.post('/editClassMember/add', (req, res, next) => {
           console.log(error);
           res.redirect('/admin/editClassMember');
         } else {
-          res.redirect('/admin/editClassMember');
+          res.redirect('/admin/editClassMember?grade='+req.body.grade+'&class='+req.body.class);
         }
       });
   } //session check end
   else {
-    res.render('index', {title : 'admin Page', msg : "권한이 없거나 로그아웃 상태입니다."});
+    res.redirect('/');
   }
 });
 
