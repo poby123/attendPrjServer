@@ -197,7 +197,7 @@ router.post('/editUser', (req, res, next) => {
 router.get('/editUser/delete', (req, res, next) => {
   if (req.session.auth === adminAuth) {
     console.log(req.query.target);
-    if (req.query.target === req.session.username) {
+    if (req.query.target === req.session.username) { //block delete admin self.
       res.redirect('/admin/editUser');
     } else {
       connection.query('DELETE FROM tbluser WHERE username=?', [req.query.target], (error, results) => {
