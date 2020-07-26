@@ -1,6 +1,8 @@
 :root{
-  --theme-color : #C3E0FF;
-  --text-color : #465CEF;
+  /* --theme-color : #C3E0FF;
+  --text-color : #465CEF; */
+  --theme-color : #465CEF;
+  --text-color : white;
 }
 
 body {
@@ -34,8 +36,8 @@ a:hover, button:hover{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--theme-color);
-  color : var(--text-color);
+  background-color: var(--text-color);
+  color : var(--theme-color);
   font-family: 'Nanum Gothic', sans-serif;
 }
 
@@ -53,7 +55,7 @@ a:hover, button:hover{
   font-family: 'Baloo Da 2', cursive;
 }
 .login-container .fa-user{
-  border : 2px solid var(--text-color);
+  border : 2px solid var(--theme-color);
   border-radius: 50%;
   font-size: 18px;
   padding : 1em;
@@ -66,7 +68,7 @@ a:hover, button:hover{
   color: inherit;
   border : none;
   padding-left: 0.2em;
-  border: 1px solid var(--text-color);
+  border: 1px solid var(--theme-color);
   border-radius: 10px;
   font-size: 15px;
   height: 2em;
@@ -78,6 +80,7 @@ a:hover, button:hover{
   width: 100%;
   font-size: 15px;
   margin-top: 2em;
+  background-color: var(--theme-color);
   height: 3em;
   color : white;
   font-family: 'Baloo Da 2', cursive;
@@ -90,74 +93,107 @@ a:hover, button:hover{
 **************/
 .edit-body{
   height: 100vh;
+  /* background-color: var(--theme-color); */
+  color : var(--theme-color);
 }
 .edit-nav{
   padding-top: 0.5em;
+  width : 100vw;
+  top : 0;
+  left : 0;
+  position : fixed;
+  border : 1px solid blue;
+  background-color: var(--theme-color);
 }
-.edit-nav li{
-  line-height: 2em;
-  display: inline-block;
-  margin-right: 2em;
-}
+
 .edit-nav-container{
-  display: block;
+  padding-left : 1em;
+  padding-right : 1em;
+  display: flex;
+  justify-content: space-between;
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
 }
+/*Manmin Youth title*/
 #title{
   font-family: 'Baloo Da 2', cursive;
+  font-size : 25px;
+  line-height: 2em;
+  color :var(--text-color);
 }
-#toggle{
+/*Toggle(Show, Hide) Button*/
+.toggle{
+  color : var(--text-color);
   font-size: 25px;
   background: none;
 }
-.edit-nav-container ul{
-  max-width: inherit;
-  border : 1px solid var(--text-color);
+
+/*toggled ul tag*/
+.toggleTarget{
+  position : absolute;
+  background-color : white;
+  margin : 0;
+  padding : 0;
+  top : 0;
+  right : 0;
   display: none;
-  background-color: var(--theme-color);
-  color : var(--text-color);
+  height: 100vh;
+  width : 60vw;
+  border : 1px solid var(--theme-color);
+  align-items: center;
+  justify-content: center;
 }
-.edit-nav-container li{
-  display: block;
-  text-align: right;
-  font-family: 'Nanum Gothic', sans-serif;
+.toggleTarget li{
+  border-bottom : 1px solid var(--theme-color);
+  text-align: center;
+  width :100%;
   line-height: 2em;
-  /* border-bottom : solid white 1px; */
+  display: inline-block;
+  margin : 0;
 }
-.small-nav-container{
-  display: flex;
-  justify-content: space-between;
-  padding-left: 1em;
-  padding-right : 1em;
+.toggleTarget a{
+  color : var(--theme-color);
 }
+.toggleTarget #toggle-hide{  
+  width : 100%;
+  height : 100%;
+  background-color: var(--theme-color);
+  text-align: left;
+  color :var(--text-color);
+  font-size : 45px;
+  font-weight: bold;
+}
+
+/*Content*/
 .edit-content{
+  margin-top : 15vh;
   display: flex;
   flex-direction: column;
-  /* border : 1px solid red; */
   align-items: center;
   font-family: 'Nanum Gothic', sans-serif;
 }
 .edit-content-container{
-  padding : 5vh 5vw;
-  margin : 2em;
+  margin-top : 2vh;
+  margin-bottom: 2vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width : 70vw;
-  border : 2px solid var(--text-color);
-  border-radius: 20px;
   text-align: center;
   font-size: 17px;
+  border-bottom : 1px solid var(--theme-color);
 }
-.edit-content-container table input{
-  margin : 0;
-  text-align: center;
+.edit-content-container #date {
+  background: none;
+  border : 1px solid var(--theme-color);
 }
 .edit-content-container select{
   /* display: inline-block; */
+  border : none;
+  background: none;
+  border : 1px solid var(--theme-color);
   margin-top: 1.5em;
   font-size : inherit;
   width : 100%;
@@ -166,26 +202,36 @@ a:hover, button:hover{
   display : inline-block;
   margin-top: 1.5em;
   font-size: inherit;
-  /* border : none; */
-  border : 1.2px solid var(--text-color);
+  border : 1.2px solid var(--theme-color);
 }
 .editUser-modify input{
   width : 2em;
 }
+.edit-content-container table{
+  margin-top : 1em;
+}
+th{
+  background-color: var(--theme-color);
+  color : var(--text-color);
+  font-size : 15px;
+}
 .edit-content-container th,td{
-  border-bottom : 1px solid gray;
+  border-bottom : 1px solid var(--theme-color);
   line-height: 3em;
   width : 100px;
 }
-/*.edit-content-container th, td, tr{
-  border : 1px solid gray;
-}*/
+.edit-content-container table input{
+  margin : 0;
+  border : 1px solid var(--theme-color);
+  text-align: center;
+}
 .edit-content-container button{
   margin-top: 2em;
   margin-bottom: 2em;
   line-height: 3em;
+  background-color: var(--theme-color);
   color : white;
-  width : 80%;
+  width : 200px;
 }
 @media (min-width : 768px) {
   .login-container{

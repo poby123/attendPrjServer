@@ -1,6 +1,9 @@
 
-$('#toggle').click(function(){
-  $('.toggleTarget').slideToggle('slow');
+$('.toggle').click(function(){
+  $('.toggleTarget').animate({
+    width : 'toggle'
+  });
+  $('toggleTarget').css('display', 'flex');
 });
 
 function ReportToExcelConverter() {

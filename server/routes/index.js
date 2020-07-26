@@ -32,7 +32,7 @@ router.get('/', function(req, res, next) {
       res.render('index', {title : 'Manmin Youth', msg : "", menu:userNav});
     }
   }else{
-    res.render('login', { title: 'Manmin Youth | Sigin in' , msg:""});
+    res.render('login', { title: 'Manmin Youth | Sigin in' , msg:"", menu:''});
   }
 });
 

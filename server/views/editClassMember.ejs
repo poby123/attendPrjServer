@@ -1,7 +1,7 @@
 <%- include('./partials/header.ejs'); %>
   <section class="edit-content">
     <div class="edit-content-container">
-      <h2>기관원 추가</h2>
+      <h3>기관원 추가</h3>
       <form class="editUser-add" action="/admin/editClassMember/add" method="post">
         <input type="text" name="name" placeholder="name">
         <input type="text" name="grade" placeholder="grade">
@@ -10,7 +10,7 @@
       </form>
     </div>
     <div class="edit-content-container">
-      <h2>기관원 수정(이름은 수정 불가합니다. 원하시는 분은 삭제 후 추가해주세요)</h2>
+      <h3>기관원 조회</h3>
       <form class="editUser-modify" action="/admin/editClassMember" method="get">
         <select name="grade" id="gradeBox">
           <option value="">선교회</option>
@@ -40,6 +40,9 @@
         </select>
         <button type="submit">조회</button>
       </form>
+    </div>
+    <div class="edit-content-container">
+      <h3>기관원 수정</h3>
       <form class="editUser-modify" action="/admin/editClassMember" method="post">
         <table>
           <th>name</th>

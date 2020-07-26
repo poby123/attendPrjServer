@@ -10,17 +10,21 @@
 <body class="edit-body">
   <nav class="edit-nav">
     <div class="edit-nav-container">
-      <div class="small-nav-container">
-        <h2 id="title"><a href="/">Manmin Youth</a></h2>
-        <button type="button" id="toggle"><i class="fas fa-bars"></i></button>
-      </div>
+      <h2><a id="title" href="/">Manmin Youth</a></h2>
+      <button type="button" class="toggle"><i class="fas fa-bars"></i></button>
+    </div>
+    <div class="nav-content">
+      <%
+        if(menu != '' && menu.length > 0){
+      %>
       <ul class="toggleTarget">
-        <%
-        if(menu.length > 0){
-          for(let i=0;i<menu.length;i++){%>
-          <li><a href="<%=menu[i].navLink%>"><%=menu[i].nav%></a></li>
-        <%}
-      }%>
+        <li><button type="button" class="toggle" id="toggle-hide"> > </button></li>
+          <%
+            for(let i=0;i<menu.length;i++){
+          %>
+            <li><a href="<%=menu[i].navLink%>"><%=menu[i].nav%></a></li><br>
+          <%}%>
       </ul>
+      <%}%>
     </div>
   </nav>
