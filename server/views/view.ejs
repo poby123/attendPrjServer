@@ -43,18 +43,18 @@
         let regDateList = [];
 
         //find start class(min)
-        for(let i=1;i<results.length;i++){
+        for(let i=0;i<results.length;i++){
           if(firstClass > results[i].class){
             firstClass = results[i].class;
           }
           if(lastClass < results[i].class){
             lastClass = results[i].class;
           }
-          regDateList.push(results[i].regDate);
+          regDateList.push(results[i].regDate + '');
         } //for end
 
-        Array.from(new Set(regDateList));
-        rowNum = regDateList.length;
+        const uniqueDateList = Array.from(new Set(regDateList));
+        rowNum = uniqueDateList.length;
 
         classNum = lastClass - firstClass + 1;
         let d = new Date(results[0].regDate); //results is ordered by regDate and class
@@ -62,11 +62,11 @@
 
       %>
       <h3><%=month%>월 데이터</h3>
+      <!-- <h3><%=uniqueDateList%></h3>
       <h3><%=classNum%></h3>
-      <h3><%=rowNum%></h3>
+      <h3><%=rowNum%></h3> -->
       <table id="mainTable">
         <tbody>
-       
         <th>낮모임 인원</th>
         <%
           for(let i=0;i<classNum;i++){
@@ -105,7 +105,47 @@
         }
         %>
       </tbody>
-      
+      <!-- 화찬인원 -->
+      <tbody>
+        <th>화찬 인원</th>
+        <%
+          for(let i=0;i<classNum;i++){
+        %>
+        <th><%=firstClass+i%>기관</th>
+        <%
+        }
+        %>
+          <th>합계</th>
+        <%
+        index = 0;
+        for(let i=0;i<rowNum;i++){ //주차
+          let sum = 0;
+        %>
+        <tr>  
+          <td><%=i+1%>주차</td>
+          <%
+            for(let j=0;j<classNum;j++){
+              if(index < results.length && results[index].class === firstClass + j) {
+                sum += results[index].tue;
+          %>
+                <td><%=results[index].tue%></td>
+          <%  
+                index++;
+              }
+              else {
+          %>
+                <td>-</td>
+          <%
+              }
+            }
+          %>
+          <td><%=sum%></td>
+        </tr>
+        <%
+        }
+        %>
+      </tbody>
+
       </table>
       <iframe id="txtArea1" style="display:none"></iframe>
       <button onclick="ReportToExcelConverter()" style="width:200px">excel 다운</button>
