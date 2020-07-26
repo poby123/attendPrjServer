@@ -70,6 +70,7 @@ router.post('/signin', (req, res, next) => {
         res.render('login', {
           title: 'Sigin in',
           msg: "아이디나 비밀번호가 틀렸습니다",
+          menu : '',
         });
       }
     });
