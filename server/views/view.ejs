@@ -37,17 +37,33 @@
       if(results !== '' && results.length > 0){
 
         let classNum = 1;
+        let rowNum = 0;
         let firstClass = results[0].class;
-        let d = new Date(results[0].regDate);
+        let lastClass = results[0].class;
+        let regDateList = [];
+
+        //find start class(min)
+        for(let i=1;i<results.length;i++){
+          if(firstClass > results[i].class){
+            firstClass = results[i].class;
+          }
+          if(lastClass < results[i].class){
+            lastClass = results[i].class;
+          }
+          regDateList.push(results[i].regDate);
+        } //for end
+
+        Array.from(new Set(regDateList));
+        rowNum = regDateList.length;
+
+        classNum = lastClass - firstClass + 1;
+        let d = new Date(results[0].regDate); //results is ordered by regDate and class
         let month = d.getMonth() + 1;
 
-        for(;classNum<results.length;classNum++){
-          if(results[classNum].class === firstClass){
-            break;
-          }
-        }
       %>
       <h3><%=month%>월 데이터</h3>
+      <h3><%=classNum%></h3>
+      <h3><%=rowNum%></h3>
       <table id="mainTable">
         <tbody>
        
@@ -61,18 +77,20 @@
         %>
           <th>합계</th>
         <%
-        for(let i=0;i<results.length/classNum;i++){ //주차
+        let index = 0;
+        for(let i=0;i<rowNum;i++){ //주차
           let sum = 0;
         %>
-        <tr>
+        <tr>  
           <td><%=i+1%>주차</td>
           <%
             for(let j=0;j<classNum;j++){
-              if(classNum*i+j < results.length && results[classNum*i+j].class == firstClass + j) {
-                sum += results[classNum*i+j].meeting;
+              if(index < results.length && results[index].class === firstClass + j) {
+                sum += results[index].meeting;
           %>
-                <td><%=results[classNum*i+j].meeting%></td>
+                <td><%=results[index].meeting%></td>
           <%  
+                index++;
               }
               else {
           %>
@@ -91,7 +109,8 @@
       </table>
       <iframe id="txtArea1" style="display:none"></iframe>
       <button onclick="ReportToExcelConverter()" style="width:200px">excel 다운</button>
-      <%}else{%>
+      <%} 
+      else{%>
         <h5>데이터가 존재하지 않습니다.</h5>
       <%}%>
     </div>
