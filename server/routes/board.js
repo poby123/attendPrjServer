@@ -61,6 +61,8 @@ router.get('/', (req, res, next) => {
   console.log('/board router is called!');
   console.log(req.session.username);
   if (req.session.username) {
+    let msg = '';
+
     if (req.session.auth >= 1) { //기관장단 이상
       connection.query('SELECT * FROM tblAttend where class = ?', [req.session.class], (err, results) => {
         if (err) { //when case error
@@ -85,7 +87,7 @@ router.get('/', (req, res, next) => {
               });
             }
           }
-        } else { //else error
+        } else { //not occured error
           let data = {
             result: true,
             table: results,
@@ -93,19 +95,19 @@ router.get('/', (req, res, next) => {
           if (req.session.isApp) { //app using
             res.json(data);
           } else { //not app approach
-            console.log(results);
+            //console.log(results);
             console.log('session class : ', req.session.class);
             if (req.session.auth === adminAuth) {
               res.render('board', {
                 title: 'Board',
-                msg: '',
+                msg: msg,
                 menu: adminNav,
                 results: results
               });
             } else {
               res.render('board', {
                 title: 'Board',
-                msg: '',
+                msg: msg,
                 menu: userNav,
                 results: results
               });
@@ -122,7 +124,11 @@ router.get('/', (req, res, next) => {
     if (req.session.isApp) {
       res.json(data);
     } else {
-      res.redirect('/');
+      res.render('login', {
+        title: 'Board',
+        msg: '로그아웃 상태입니다',
+        menu: '',
+      });
     }
   }
   // console.log(data);
@@ -183,7 +189,7 @@ router.get('/view', (req, res, next) => {
             }
           }
           console.log('get grade data done.');
-          console.log(results);
+          //console.log(results);
 
           if (req.session.auth === adminAuth) {
             res.render('view', {
@@ -319,7 +325,7 @@ router.put('/save', (req, res, next) => {
                             }
                           } //for end
 
-                          console.log('numTue : ', numTue, " numMeeting : ", numMeeting);
+                          //console.log('numTue : ', numTue, " numMeeting : ", numMeeting);
 
                           //if there is no data, insert into table
                           if (checkExistResult[0]['COUNT(*)'] === 0) {
@@ -367,7 +373,13 @@ router.put('/save', (req, res, next) => {
       res.json(data);
     } //if app end
     else { //web
-      req.get('/board'); //res.redirect(url) in this router http put. so you must req.get to redirect
+      console.log('save result : ', data.result);
+      if(data.result === true){
+        res.send({result : true});
+      }
+       else{
+        res.send({result : false});
+      } 
     } //else web end
   }
   else { //no session

@@ -11,6 +11,7 @@ var router = express.Router();
 
 const dbConfig = require('../config/database.js');
 const sessionAuth = require('../config/session.js');
+const { render } = require('ejs');
 
 const connection = mysql.createPool(dbConfig);
 
@@ -85,13 +86,24 @@ router.post('/signin', (req, res, next) => {
  ***********************/
 router.get('/signout', (req, res, next) => {
   if (req.session.auth) {
+    let link = '/';
+    if(req.query.link){
+      if(req.query.link === 'true'){
+        link = 'http://check.manmin.org/';
+      }
+    }
     req.session.destroy((err) => {
       if (err) {
         console.log(err);
+        res.redirect('/');
       } else {
         req.session;
         console.log('signout success');
-        res.redirect('/');
+        if(link === '/'){
+          res.render('signout', {title:'Sign out', msg:'Good Bye!', menu:''});
+        }else{
+          res.redirect(link);
+        }
       }
     });
   }
