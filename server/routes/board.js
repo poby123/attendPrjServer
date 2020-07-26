@@ -212,12 +212,14 @@ router.get('/view', (req, res, next) => {
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
+                results : '',
                 menu: adminNav,
               });
             } else { //throw error and not auth
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
+                results : '',
                 menu: userNav
               });
             } //else end
