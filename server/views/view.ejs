@@ -34,7 +34,7 @@
         <button type="submit">조회</button>
       </form>
         <%
-        if(results.length > 0){
+        if(results != '' && results.length > 0){
 
           let classNum = 1;
           let firstClass = results[0].class;
@@ -68,10 +68,16 @@
             <td><%=i+1%>주차</td>
             <%
               for(let j=0;j<classNum;j++){
-                sum += results[classNum*i+j].meeting;
+                if(results[classNum*i].meeting != undefined) {
+                  sum += results[classNum*i+j].meeting;
             %>
-            <td><%=results[classNum*i+j].meeting%></td>
-            <%
+                  <td><%=results[classNum*i+j].meeting%></td>
+            <%  }
+                else{
+                  %>
+                  <td>-</td>
+                  <%
+                }
               }
             %>
             <td><%=sum%></td>

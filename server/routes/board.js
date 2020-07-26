@@ -170,12 +170,14 @@ router.get('/view', (req, res, next) => {
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
+                results: '',
                 menu: adminNav,
               });
             } else {
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
+                results: '',
                 menu: userNav,
               });
             }
