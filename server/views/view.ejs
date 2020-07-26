@@ -68,7 +68,7 @@
             <td><%=i+1%>주차</td>
             <%
               for(let j=0;j<classNum;j++){
-                if(results[classNum*i+j].meeting != undefined) {
+                if(!results[classNum*i+j].meeting) {
                   sum += results[classNum*i+j].meeting;
             %>
                   <td><%=results[classNum*i+j].meeting%></td>
