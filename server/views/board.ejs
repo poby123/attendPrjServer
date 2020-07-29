@@ -57,7 +57,7 @@
 
       targetObject.push(rowObject);
     }
-    //console.log(targetObject);
+    console.log(targetObject);
 
     $.ajax({
       url: '/board/save',
@@ -76,6 +76,7 @@
         }
       }
     });
+    targetObject = []; //this init is needed!
   });
 
 </script>

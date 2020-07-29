@@ -36,7 +36,7 @@ router.get('/', (req, res, next) => {
           };
           if (req.session.isApp) {
             res.json(data);
-          } else { //not app using
+          } else { //error and web
             if (req.session.auth === constData.adminAuth) {
               res.render('board', {
                 title: 'Board',
@@ -51,7 +51,8 @@ router.get('/', (req, res, next) => {
               });
             }
           }
-        } else { //not occured error
+        } 
+        else { //not occured error
           let data = {
             result: true,
             table: results,
@@ -89,7 +90,7 @@ router.get('/', (req, res, next) => {
       res.json(data);
     } else {
       res.render('login', {
-        title: 'Board',
+        title: 'Signin',
         msg: '로그아웃 상태입니다',
         menu: '',
       });
@@ -249,111 +250,137 @@ router.put('/save', (req, res, next) => {
     console.log('if username is exist');
     console.log('req.body : ', req.body);
 
-    for (let i = 0; i < req.body.length; i++) { //loop all post request
-      //update tblAttend
-      connection.query('UPDATE tblAttend SET meeting=?,tue=? where name=?',
-        [req.body[i][1], req.body[i][2], req.body[i][0]], (err, updateAttendResult) => {
-          if (err) {
-            data.result = false;
-            console.log(err);
-          } else {
-            if (i === req.body.length - 1) { //if last loop, update or insert to tblTotal
-              
-              //check to make a decision do insert or update tblTotal
-              connection.query(`SELECT COUNT(*) FROM tblTotal WHERE grade=? AND class=?
-              AND YEAR(regDate)=? AND MONTH(regDate)=? AND DAY(regDate)=?`,
-                [req.session.grade, req.session.class, current.year, current.month, current.date],
-                (err, checkExistResult) => {
-                  if (err) {
-                    console.log(err);
-                    data.result = false;
-                  } else {
-                    //variable to count number
-                    let numTue = 0;
-                    let numMeeting = 0;
+    //make query for update tblattend
+    let updateAttendQuery = `UPDATE tblattend SET`;
+    let updateAttendMeetingQuery = `meeting = case name`;
+    let updateAttendTueQuery = `tue = case name`
+    let updateAttendQueryTail = `where name in (`
+    for(let i=0;i<req.body.length;i++){
+      updateAttendMeetingQuery += ` when ? then ? `
+      updateAttendTueQuery += ` when ? then ? `
+      updateAttendQueryTail += ` ?`;
+      if(i != req.body.length - 1) {
+        updateAttendQueryTail += `,`;
+      }
+    }
+    updateAttendMeetingQuery += `END, `;
+    updateAttendTueQuery += `END`;
+    updateAttendQueryTail += `)`
+    updateAttendQuery = updateAttendQuery + ` ` + updateAttendMeetingQuery + ` ` + updateAttendTueQuery + ` ` + updateAttendQueryTail;
 
-                    //get sum of tue and meeting data
-                    connection.query(`
-                    SELECT * FROM tblattend WHERE grade=? AND class=?`,
-                      [req.session.grade, req.session.class],
-                      (err, results) => {
-                        if (err) {
-                          console.log(err);
-                          data.result = false;
-                        } else {
-                          for (let i = 0; i < results.length; i++) {
-                            if (results[i].tue === 1) {
-                              numTue++;
-                            }
-                            if (results[i].meeting === 1) {
-                              numMeeting++;
-                            }
-                          } //for end
+    //make argument for update tblattend
+    let arg = [];
+    for(let i=0;i<req.body.length;i++){
+      arg.push(req.body[i][0]); // name push
+      arg.push(req.body[i][1]); //meeting push
+    }
+    for(let i=0;i<req.body.length;i++){
+      arg.push(req.body[i][0]); // name push
+      arg.push(req.body[i][2]); //tue push
+    }
+    for(let i=0;i<req.body.length;i++){
+      arg.push(req.body[i][0]); // name push
+    }
 
-                          //if there is no data, insert into table
-                          if (checkExistResult[0]['COUNT(*)'] === 0) {
-                            console.log('In Insert numTue : ', numTue, " numMeeting : ", numMeeting);
+    //update tblAttend
+    connection.query(updateAttendQuery, arg, (err, result)=> {
+      if(err){
+        data.result = false;
+        console.log(err);
+      }
+      else{
+        //check to make a decision do insert or update tblTotal
+          connection.query(`SELECT COUNT(*) FROM tblTotal WHERE grade=? AND class=?
+          AND YEAR(regDate)=? AND MONTH(regDate)=? AND DAY(regDate)=?`,
+            [req.session.grade, req.session.class, current.year, current.month, current.date],
+            (err, checkExistResult) => {
+              if (err) {
+                console.log(err);
+                  data.result = false;
+                } else {
+                  //variable to count number
+                  let numTue = 0;
+                  let numMeeting = 0;
 
-                            connection.query(`INSERT INTO tblTotal(grade, class, regDate, tue, meeting)
-                            VALUES(?,?,NOW(),?,?)`,
-                              [req.session.grade, req.session.class, numTue, numMeeting],
-                              (err, insertResult) => {
-                                if (err) {
-                                  data.result = false;
-                                  console.log(err, ' in insert tblTotal');
-                                }else{ //insert and no error
-                                  if (req.session.isApp) { //app
-                                    res.json(data);
-                                  }
-                                  else {
-                                    res.send({result : true});
-                                  }
+                  //get data that is sum of tue and meeting data
+                  connection.query(`
+                  SELECT * FROM tblattend WHERE grade=? AND class=?`,
+                  [req.session.grade, req.session.class],
+                    (err, results) => {
+                      if (err) {
+                        console.log(err);
+                        data.result = false;
+                      } else {
+                        for (let i = 0; i < results.length; i++) {
+                          if (results[i].tue === 1) {
+                            numTue++;
+                          }
+                          if (results[i].meeting === 1) {
+                            numMeeting++;
+                          }
+                        } //for end
+
+                        //if there is no data, insert into table
+                        if (checkExistResult[0]['COUNT(*)'] === 0) {
+                          console.log('In Insert numTue : ', numTue, " numMeeting : ", numMeeting);
+
+                          connection.query(`INSERT INTO tblTotal(grade, class, regDate, tue, meeting)
+                          VALUES(?,?,NOW(),?,?)`,
+                            [req.session.grade, req.session.class, numTue, numMeeting],
+                            (err, insertResult) => {
+                              if (err) {
+                                data.result = false;
+                                console.log(err, ' in insert tblTotal');
+                              }else{ //insert and no error
+                                if (req.session.isApp) { //app
+                                  res.json(data);
                                 }
-                              });
-                          } //if not exist end
-
-                          //if there is data, update table
-                          else {
-                            console.log('In Update numTue : ', numTue, " numMeeting : ", numMeeting);
-
-                            connection.query(`UPDATE tbltotal SET tue=?, meeting=?
-                              WHERE grade=? AND class=? AND
-                              YEAR(regdate)=? AND MONTH(regdate)=? AND DAY(regdate)=?`,
-                              [numTue, numMeeting, req.session.grade, req.session.class,
-                                current.year, current.month, current.date
-                              ],
-                              (err, insertResult) => {
-                                if (err) {
-                                  data.result = false;
-                                  console.log(err, ' in update tblTotal');
+                                else {
+                                  res.send({result : true});
                                 }
-                                else{ //update and no error
-                                  if (req.session.isApp) { //app
-                                    res.json(data);
-                                  }
-                                  else {
-                                    res.send({result : true});
-                                  }
-                                }
-                              });
-                          } //else exist end
+                              }
+                            });
+                        } //if not exist end
 
-                        } //err else end
-                      }); //get sum of tue and meeting data query end
-                  } //not occured err end
-                }); //check to make a decision query end
-            } //data.result == true end
-          } //else err end
-        }); //update tblattend query end
-    } //for end
-    if(!data.result){ //if there was error
-      if (req.session.isApp) { //app
-       res.json(data);
-      } 
-      else { //web
-         res.send({result : false});
-        } //else web end
-      } //if error end
+                        //if there is data, update table
+                        else {
+                          console.log('In Update numTue : ', numTue, " numMeeting : ", numMeeting);
+                           connection.query(`UPDATE tbltotal SET tue=?, meeting=?
+                            WHERE grade=? AND class=? AND
+                            YEAR(regdate)=? AND MONTH(regdate)=? AND DAY(regdate)=?`,
+                            [numTue, numMeeting, req.session.grade, req.session.class,
+                              current.year, current.month, current.date
+                            ],
+                            (err, insertResult) => {
+                              if (err) {
+                                data.result = false;
+                                console.log(err, ' in update tblTotal');
+                              }
+                              else{ //update and no error
+                                if (req.session.isApp) { //app
+                                  res.json(data);
+                                }
+                                else {
+                                  res.send({result : true});
+                                }
+                              }
+                            });
+                        } //else exist end
+                      } //err else end
+                    }); //get sum of tue and meeting data query end
+                } //not occured err end
+              }); //check to make a decision query end
+            }//no err
+            
+        if(!data.result){ //if there was error
+          if (req.session.isApp) { //app
+            res.json(data);
+          } 
+          else { //web
+            res.send({result : false});
+          }
+        }
+    });
   }
   else { //no login session
     console.log('username session does not exist!');
