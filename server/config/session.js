@@ -6,6 +6,6 @@ const authdb = require('./database.js');
 module.exports = {
 	secret            : '@_df%o*topm$p&_',
 	resave            : false,
-	saveUninitialized : true,
-	store             : new MySQLStore(authdb)
+	saveUninitialized : false,
+	store             : new MySQLStore(authdb),
 };

@@ -1,4 +1,15 @@
+//To don't write history excepct root page
+document.querySelectorAll('.navButton').forEach(item => {
+  item.addEventListener('click', event => {
+    if(document.location.pathname === '/'){
+      location.href = event.target.id;
+    }else{
+      location.replace(event.target.id);
+    }
+  })
+});
 
+//To toggle nav bar
 $('.toggle').click(function(){
   $('.toggleTarget').animate({
     width : 'toggle'
@@ -6,6 +17,7 @@ $('.toggle').click(function(){
   $('toggleTarget').css('display', 'flex');
 });
 
+//to excel function
 function ReportToExcelConverter() {
   const d = new Date();
   $("#mainTable").table2excel({
@@ -19,9 +31,11 @@ function ReportToExcelConverter() {
   });
 };
 
+//to maintain status of select box
 let selectedGrade = getParameterByName('grade');
 $('#gradeBox option:eq(' + selectedGrade + ')').attr('selected', "selected");
 
+//to get status of select box
 function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, '\\$&');
