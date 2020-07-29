@@ -109,8 +109,8 @@ router.get('/view', (req, res, next) => {
       month: date.getMonth() + 1,
       date: date.getDate(),
     } //current value end
-    let targetGrade = 1;
-    let targetClass = 0;
+    let targetGrade = req.session.grade;
+    let targetClass = req.session.class;
     let targetYear = current.year;
     let targetMonth = current.month;
     let targetDate = current.date;
@@ -130,7 +130,7 @@ router.get('/view', (req, res, next) => {
       targetDate = d.getDate();
     }
 
-    if (targetClass === 0) { //get grade data
+    if (targetClass === '0') { //get grade data
       console.log('get Grade View Data');
       connection.query(`SELECT * FROM tblTotal WHERE grade=? AND
       YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate ASC, class ASC`,
