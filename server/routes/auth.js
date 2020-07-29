@@ -8,9 +8,9 @@ var router = express.Router();
 
 const dbConfig = require('../config/database.js');
 const sessionAuth = require('../config/session.js');
+const constData = require('../config/constants.js');
 
 const connection = mysql.createPool(dbConfig);
-
 router.use(session(sessionAuth));
 
 /* GET home page. */

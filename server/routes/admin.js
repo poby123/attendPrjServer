@@ -11,24 +11,10 @@ var router = express.Router();
 
 const dbConfig = require('../config/database.js');
 const sessionAuth = require('../config/session.js');
+const constData = require('../config/constants.js');
 const { render } = require('ejs');
 
 const connection = mysql.createPool(dbConfig);
-
-const adminAuth = 4;
-const writerAuth = 1;
-const adminNav = [
-  {nav : "앱 사용자 편집", navLink : "/admin/editUser"},
-  {nav : "기관원 목록 편집", navLink : "/admin/editClassMember"},
-  {nav : "데이터 보기", navLink : "/board/view"},
-  {nav : "기관 출석 체크", navLink : "/board"},
-  {nav : "로그아웃", navLink : "/admin/signout"},
-];
-const userNav = [
-  {nav : "데이터 보기", navLink : "/board/view"},
-  {nav : "기관 출석 체크", navLink : "/board"},
-  {nav : "로그아웃", navLink : "/admin/signout"},
-];
 
 router.use(session(sessionAuth));
 
@@ -57,7 +43,7 @@ router.post('/signin', (req, res, next) => {
       // console.log(results.length);
       if (err) {
         console.log(err);
-      } else if (results.length == 1 && results[0].auth >= writerAuth) {
+      } else if (results.length == 1 && results[0].auth >= constData.writerAuth) {
         req.session.username = results[0].username;
         req.session.grade = results[0].grade;
         req.session.class = results[0].class;
@@ -119,31 +105,31 @@ router.get('/signout', (req, res, next) => {
  *
  ***********************/
 router.get('/editUser', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     connection.query('SELECT username, grade, class, auth FROM tbluser', (err, results) => {
       if (err) {
-        if(req.session.auth === adminAuth){
+        if(req.session.auth === constData.adminAuth){
           res.render('index', {
             title: 'admin Page',
             msg: "error is occured!",
-            menu : adminNav
+            menu : constData.adminNav
           });
         }
         else{
           res.render('index', {
             title: 'admin Page',
             msg: "",
-            menu : userNav
+            menu : constData.userNav
           });
         }
 
       } else {
-        if(req.session.auth === adminAuth){
+        if(req.session.auth === constData.adminAuth){
           res.render('editUser', {
             title: 'admin Page',
             msg: "",
             results: results,
-            menu : adminNav,
+            menu : constData.adminNav,
           });
         }
         else{
@@ -151,7 +137,7 @@ router.get('/editUser', (req, res, next) => {
             title: 'admin Page',
             msg: "",
             results: results,
-            menu : userNav,
+            menu : constData.userNav,
           });
         }
       }
@@ -171,7 +157,7 @@ router.get('/editUser', (req, res, next) => {
  ***********************/
 router.post('/editUser', (req, res, next) => {
   let flag = true;
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     connection.query('SELECT username FROM tbluser', (err, results) => {
       if (err) {
         console.log(err);
@@ -208,7 +194,7 @@ router.post('/editUser', (req, res, next) => {
  *
  ***********************/
 router.get('/editUser/delete', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     console.log(req.query.target);
     if (req.query.target === req.session.username) { //block delete admin self.
       res.redirect('/admin/editUser');
@@ -235,7 +221,7 @@ router.get('/editUser/delete', (req, res, next) => {
  *
  ***********************/
 router.post('/editUser/add', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     if (req.body.username === req.session.username) {
       res.redirect('/admin/editUser');
     } else {
@@ -268,7 +254,7 @@ router.post('/editUser/add', (req, res, next) => {
  *
  ***********************/
 router.get('/editClassMember', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     let selectedGrade = req.query.grade;
     let selectedClass = req.query.class;
     if (selectedGrade === '') selectedGrade = 1;
@@ -278,28 +264,28 @@ router.get('/editClassMember', (req, res, next) => {
       (err, results) => {
         if (err) { //err
           console.log(err);
-          if(req.session.auth === adminAuth){
+          if(req.session.auth === constData.adminAuth){
             res.render('editUser', {
               title: 'admin Page',
               msg: "error is occured to get attend table",
-              menu : adminNav,
+              menu : constData.adminNav,
             });
           }
           else{
             res.render('editUser', {
               title: 'admin Page',
               msg: "error is occured to get attend table",
-              menu : userNav,
+              menu : constData.userNav,
             });
           }
         } //err end
         else {
-           if(req.session.auth === adminAuth){
+           if(req.session.auth === constData.adminAuth){
             res.render('editClassMember', {
               title: 'admin Page',
               msg: "",
               results: results,
-              menu : adminNav,
+              menu : constData.adminNav,
             });
           } //no err and admin auth end
           else{
@@ -307,7 +293,7 @@ router.get('/editClassMember', (req, res, next) => {
               title: 'admin Page',
               msg: "",
               results: results,
-              menu : userNav,
+              menu : constData.userNav,
             });
           }
         }
@@ -327,7 +313,7 @@ router.get('/editClassMember', (req, res, next) => {
  ***********************/
 router.post('/editClassMember', (req, res, next) => {
   let flag = true;
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     connection.query('SELECT name FROM tblAttend', (err, results) => {
       if (err) {
         console.log(err);
@@ -363,7 +349,7 @@ router.post('/editClassMember', (req, res, next) => {
  *
  ***********************/
 router.get('/editClassMember/delete', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     connection.query('DELETE FROM tblAttend WHERE name=?', [req.query.target], (error, results) => {
       if (error) {
         console.log(error);
@@ -385,7 +371,7 @@ router.get('/editClassMember/delete', (req, res, next) => {
  *
  ***********************/
 router.post('/editClassMember/add', (req, res, next) => {
-  if (req.session.auth === adminAuth) {
+  if (req.session.auth === constData.adminAuth) {
     console.log('name : ', req.body.name);
     connection.query(`INSERT INTO tblAttend (name, grade, class)
       VALUES( ? , ? , ? )`,
