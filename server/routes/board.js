@@ -16,43 +16,6 @@ const connection = mysql.createPool(dbConfig);
 
 router.use(session(sessionAuth));
 
-const adminAuth = 4;
-const writerAuth = 1;
-const adminNav = [{
-    nav: "앱 사용자 편집",
-    navLink: "/admin/editUser"
-  },
-  {
-    nav: "기관원 목록 편집",
-    navLink: "/admin/editClassMember"
-  },
-  {
-    nav: "데이터 보기",
-    navLink: "/board/view"
-  },
-  {
-    nav: "기관 출석 체크",
-    navLink: "/board"
-  },
-  {
-    nav: "로그아웃",
-    navLink: "/admin/signout"
-  },
-];
-const userNav = [{
-    nav: "데이터 보기",
-    navLink: "/board/view"
-  },
-  {
-    nav: "기관 출석 체크",
-    navLink: "/board"
-  },
-  {
-    nav: "로그아웃",
-    navLink: "/admin/signout"
-  },
-];
-
 /*******************
 
   Send Attend Board data to Client
@@ -64,7 +27,7 @@ router.get('/', (req, res, next) => {
   if (req.session.username) {
     let msg = '';
 
-    if (req.session.auth >= 1) { //기관장단 이상
+    if (req.session.auth >= constData.writerAuth) { //기관장단 이상
       connection.query('SELECT * FROM tblAttend where class = ?', [req.session.class], (err, results) => {
         if (err) { //when case error
           console.log(err);
@@ -74,17 +37,17 @@ router.get('/', (req, res, next) => {
           if (req.session.isApp) {
             res.json(data);
           } else { //not app using
-            if (req.session.auth === adminAuth) {
+            if (req.session.auth === constData.adminAuth) {
               res.render('board', {
                 title: 'Board',
                 msg: 'Error is Occured!',
-                menu: adminNav
+                menu: constData.adminNav
               });
             } else {
               res.render('board', {
                 title: 'Board',
                 msg: 'Error is Occured!',
-                menu: userNav
+                menu: constData.userNav
               });
             }
           }
@@ -98,18 +61,18 @@ router.get('/', (req, res, next) => {
           } else { //not app approach
             //console.log(results);
             console.log('session class : ', req.session.class);
-            if (req.session.auth === adminAuth) {
+            if (req.session.auth === constData.adminAuth) {
               res.render('board', {
                 title: 'Board',
                 msg: msg,
-                menu: adminNav,
+                menu: constData.adminNav,
                 results: results
               });
             } else {
               res.render('board', {
                 title: 'Board',
                 msg: msg,
-                menu: userNav,
+                menu: constData.userNav,
                 results: results
               });
             }
@@ -138,7 +101,7 @@ router.get('/', (req, res, next) => {
 /////////////////////////////////// View Data Start //////////////////////////////////////////////
 
 router.get('/view', (req, res, next) => {
-  if (req.session.auth >= writerAuth) {
+  if (req.session.auth >= constData.writerAuth) {
     let date = new Date();
     const current = {
       year: date.getFullYear(),
@@ -173,38 +136,38 @@ router.get('/view', (req, res, next) => {
         [targetGrade, targetYear, targetMonth], (err, results) => {
           if (err) {
             console.log(err);
-            if (req.session.auth === adminAuth) {
+            if (req.session.auth === constData.adminAuth) {
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
                 results: '',
-                menu: adminNav,
+                menu: constData.adminNav,
               });
             } else {
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
                 results: '',
-                menu: userNav,
+                menu: constData.userNav,
               });
             }
           }
           console.log('get grade data done.');
           //console.log(results);
 
-          if (req.session.auth === adminAuth) {
+          if (req.session.auth === constData.adminAuth) {
             res.render('view', {
               title: 'View',
               msg: "",
               results: results,
-              menu: adminNav,
+              menu: constData.adminNav,
             });
           } else {
             res.render('view', {
               title: 'View',
               msg: "",
               results: results,
-              menu: userNav,
+              menu: constData.userNav,
             });
           }
         }); //query end
@@ -215,36 +178,36 @@ router.get('/view', (req, res, next) => {
         [targetGrade, targetClass, targetYear, targetMonth], (err, results) => {
           if (err) {
             console.log(err);
-            if (req.session.auth === adminAuth) { //case auth
+            if (req.session.auth === constData.adminAuth) { //case auth
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
                 results : '',
-                menu: adminNav,
+                menu: constData.adminNav,
               });
             } else { //throw error and not auth
               res.render('view', {
                 title: 'View',
                 msg: 'error is occured',
                 results : '',
-                menu: userNav
+                menu: constData.userNav
               });
             } //else end
           } //err end
           else { //else err
-            if (req.session.auth === adminAuth) {
+            if (req.session.auth === constData.adminAuth) {
               res.render('view', {
                 title: 'View',
                 msg: "",
                 results: results,
-                menu: adminNav,
+                menu: constData.adminNav,
               });
             } else { //else not admin
               res.render('view', {
                 title: 'View',
                 msg: "",
                 results: results,
-                menu: userNav,
+                menu: constData.userNav,
               });
             }
           }
