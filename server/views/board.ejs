@@ -66,7 +66,7 @@
       data: JSON.stringify(targetObject),
       dataType:'json',
       success : function(result){
-        console.log(result.result);
+        // console.log(result.result);
         if(result.result){
           if(confirm('저장에 성공했습니다. 교회 출석체크 페이지로 이동하시겠습니까? 확인을 누르시면 자동으로 로그아웃 됩니다.')){
             location.href = '/auth/signout?link=true';
