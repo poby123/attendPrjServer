@@ -1,8 +1,37 @@
 <%- include('./partials/header.ejs'); %>
-  <section class="content">
-
+  <section class="edit-content">
+    <div class="edit-content-container">
+      <%
+        if(result !== 'null' && result.length > 0){
+      %>
+          <h3><%=result[0].month%>월 일정</h3>
+          <table>
+            <th>주</th>
+            <th>낮모임/저녁모임</th>
+            <th>화찬모임</th>
+      <%
+            for(let i=0;i<result.length;i++){
+              if(result[i].display){
+      %>
+            <tr>
+              <td><%=result[i].week%></td>
+              <td><%=result[i].sundayContent%></td>
+              <td><%=result[i].tuesDayContent%></td>
+            </tr>              
+      <%        
+              }
+            }
+      %>
+          </table>
+      <%   
+        }else{
+      %>
+          <h3>일정이 없습니다. 선교회 임원님께서 '연간 행사 편집' 탭에서 연간행사를 편집해주세요!</h3>
+      <%
+        }
+      %>
+    </div>
   </section>
-
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
   <script src="https://kit.fontawesome.com/02656a2617.js"></script>
