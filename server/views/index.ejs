@@ -7,17 +7,22 @@
           <h3><%=result[0].month%>월 일정</h3>
           <table>
             <th>주</th>
-            <th>낮모임/저녁모임</th>
-            <th>화찬모임</th>
+            <th>구분</th>
+            <th>내용</th>
+            
       <%
             for(let i=0;i<result.length;i++){
               if(result[i].display){
       %>
             <tr>
-              <td><%=result[i].week%></td>
+              <td rowspan="2"><%=result[i].week%>주</td>
+              <td>주일 낮/저녁</td>
               <td><%=result[i].sundayContent%></td>
-              <td><%=result[i].tuesDayContent%></td>
             </tr>              
+            <tr>
+              <td>화찬모임</td>
+              <td><%=result[i].tuesDayContent%></td>
+            </tr>
       <%        
               }
             }
