@@ -18,17 +18,17 @@ router.get('/', function(req, res, next) {
   if(req.session.auth >= constData.writerAuth){
     let date = new Date();
     let month = date.getMonth() + 1;
-    connection.query(`SELECT * FROM tblPlanner WHERE month = ? AND grade = ? `, [month, req.session.grade], (err, result)=> {
+    
+    connection.query(`SELECT * FROM tblPlanner WHERE month = ? AND grade = ?`, [month, req.session.grade, true], (err, result)=> {
       if(err){
         console.log(err);
         if(req.session.auth === constData.adminAuth){
-          res.render('index', {title : 'Manmin Youth', msg : "", result : 'null' , menu:constData.adminNav});
+          res.render('index', {title : 'Manmin Youth', msg : "", result : '' , menu:constData.adminNav});
         }
         else{
-          res.render('index', {title : 'Manmin Youth', msg : "", result : 'null', menu:constData.userNav});
+          res.render('index', {title : 'Manmin Youth', msg : "", result : '', menu:constData.userNav});
         }
       }else{
-        console.log(result);
         if(req.session.auth === constData.adminAuth){
           console.log('no error to get table');
           res.render('index', {title : 'Manmin Youth', msg : "", result : result ,menu:constData.adminNav});

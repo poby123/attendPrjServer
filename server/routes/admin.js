@@ -182,47 +182,36 @@ router.post('/editUser/add', (req, res, next) => {
  ***********************/
 router.get('/editClassMember', (req, res, next) => {
   if (req.session.auth === constData.adminAuth) {
-    let selectedGrade = req.query.grade;
-    let selectedClass = req.query.class;
-    if (selectedGrade === '') selectedGrade = 1;
-    if (selectedClass === '') selectedClass = 1;
+    let selectedGrade = req.session.grade;
+    let selectedClass = 0;
+    if (req.query.grade !== undefined && req.query.grade !== '') selectedGrade = req.query.grade;
+    if (req.query.class !== undefined && req.query.class !== '') selectedClass = req.query.class;
 
-    connection.query('SELECT * FROM tblAttend where grade=? and class=?', [selectedGrade, selectedClass],
+    let selectQuery = 'SELECT * FROM tblAttend WHERE grade=? ';
+    let arg = [selectedGrade];
+    if(selectedClass !== 0){
+      selectQuery += 'AND class = ? ';
+      arg.push(selectedClass);
+    }
+    selectQuery += ' ORDER BY class ASC';
+
+    connection.query(selectQuery, arg,
       (err, results) => {
         if (err) { //err
           console.log(err);
-          if(req.session.auth === constData.adminAuth){
-            res.render('editUser', {
-              title: 'admin Page',
-              msg: "error is occured to get attend table",
-              menu : constData.adminNav,
-            });
-          }
-          else{
-            res.render('editUser', {
-              title: 'admin Page',
-              msg: "error is occured to get attend table",
-              menu : constData.userNav,
-            });
-          }
-        } //err end
+          res.render('editUser', {
+            title: 'admin Page',
+            msg: "error is occured to get attend table",
+            menu : constData.adminNav,
+          });
+        }
         else {
-           if(req.session.auth === constData.adminAuth){
-            res.render('editClassMember', {
-              title: 'admin Page',
-              msg: "",
-              results: results,
-              menu : constData.adminNav,
-            });
-          } //no err and admin auth end
-          else{
-            res.render('editClassMember', {
-              title: 'admin Page',
-              msg: "",
-              results: results,
-              menu : constData.userNav,
-            });
-          }
+          res.render('editClassMember', {
+            title: 'admin Page',
+            msg: "",
+            results: results,
+            menu : constData.adminNav,
+          });
         }
       });
   } else {
