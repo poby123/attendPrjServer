@@ -1,11 +1,11 @@
-const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
+const session = require("express-session");
+const MySQLStore = require("express-mysql-session")(session);
 
-const authdb = require('./database.js');
+const authdb = require("./database.js");
 
 module.exports = {
-	secret            : '@_df%o*topm$p&_',
-	resave            : false,
-	saveUninitialized : false,
-	store             : new MySQLStore(authdb),
+	secret: process.env.SESSION_SECRET,
+	resave: false,
+	saveUninitialized: false,
+	store: new MySQLStore(authdb),
 };
