@@ -5,6 +5,7 @@ const authdb = require("./database.js");
 
 module.exports = {
 	secret: process.env.SESSION_SECRET,
+	// secret: "session secrets",
 	resave: false,
 	saveUninitialized: false,
 	store: new MySQLStore(authdb),
