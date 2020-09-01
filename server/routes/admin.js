@@ -18,7 +18,7 @@ const connection = mysql.createPool(dbConfig);
 router.use(session(sessionAuth));
 
 /* GET home page. */
-router.get("/", (req, res, next) => {
+router.get("/", (req, res) => {
 	res.redirect("/");
 });
 
