@@ -1,7 +1,7 @@
 /*
 
  The Router for editing year planner of each grade's event.
-
+ This Router is allowed to executives and administor.
 */
 var express = require("express");
 var mysql = require("mysql");
@@ -19,7 +19,7 @@ router.use(session(sessionAuth));
 
 /* GET home page. */
 router.get("/", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		connection.query("SELECT * FROM tblplanner where grade=? ORDER BY no ASC", [req.session.grade], (err, result) => {
 			if (err) {
 				console.log(err);
@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
 					title: "Planner",
 					msg: "Error is occured during get data!",
 					result: 0,
-					menu: constData.adminNav,
+					menu: constData.nav[req.session.auth],
 				});
 			} else {
 				console.log("result.length : ", result.length);
@@ -36,24 +36,25 @@ router.get("/", (req, res) => {
 						title: "Planner",
 						msg: "",
 						result: 0,
-						menu: constData.adminNav,
+						menu: constData.nav[req.session.auth],
 					});
 				} else {
-					// console.log(result);
 					res.render("planner", {
 						title: "Planner",
 						msg: "",
 						result: result,
-						menu: constData.adminNav,
+						menu: constData.nav[req.session.auth],
 					});
 				}
 			}
 		});
+	} else {
+		res.redirect("/");
 	}
 });
 
 router.put("/save", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		//make query
 		let updatePlannerQuery = `UPDATE tblplanner SET`;
 		let updatePlannerSundayQuery = `sundayContent = case no`;
@@ -105,11 +106,14 @@ router.put("/save", (req, res) => {
 });
 
 router.get("/make", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		connection.query(`SELECT COUNT(*) FROM tblplanner where grade=?`, [req.session.grade], (err, result) => {
-			console.log("result[0][count] : ", result[0]["COUNT(*)"]);
-			console.log("type : ", typeof result[0]["COUNT(*)"]);
-			if (result[0]["COUNT(*)"] === 0) {
+			if (err) {
+				console.log(err);
+				res.redirect("/board");
+			}
+			//there is no planner table
+			else if (result[0]["COUNT(*)"] === 0) {
 				console.log("insert table");
 				let makequery = `INSERT INTO tblplanner(grade, month, week) VALUES`;
 				let arg = [];
@@ -132,7 +136,7 @@ router.get("/make", (req, res) => {
 						res.render("planner", {
 							title: "Planner",
 							msg: "Error is occured during make planner table",
-							menu: constData.adminNav,
+							menu: constData.nav[req.session.auth],
 						});
 					} else {
 						res.redirect("/planner");
