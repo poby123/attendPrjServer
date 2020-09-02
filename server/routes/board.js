@@ -51,7 +51,6 @@ router.get("/", (req, res) => {
 });
 
 /////////////////////////////////// View Data Start //////////////////////////////////////////////
-
 router.get("/view", (req, res) => {
 	if (req.session.auth) {
 		let date = new Date();
@@ -66,19 +65,25 @@ router.get("/view", (req, res) => {
 		let targetMonth = current.month;
 		let targetDate = current.date;
 
-		if (!req.query.grade) {
+		const isValid = (arg) => {
+			return arg != "" && arg != undefined;
+		};
+
+		//if query parameter is exist, change target variable to query arguments.
+		if (isValid(req.query.grade)) {
 			targetGrade = req.query.grade;
 		}
-		if (!req.query.class) {
+		if (isValid(req.query.class)) {
 			targetClass = req.query.class;
 		}
-		if (!req.query.date) {
+		if (isValid(req.query.date)) {
 			let d = new Date(req.query.date);
 			targetYear = d.getFullYear();
 			targetMonth = d.getMonth() + 1;
 			targetDate = d.getDate();
 		}
 
+		//this "0" means all class
 		if (targetClass === "0") {
 			//get grade data
 			console.log("get Grade View Data");
