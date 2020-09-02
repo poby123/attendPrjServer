@@ -1,35 +1,40 @@
 <%- include('./partials/header.ejs'); %>
   <section class="edit-content">
     <div class="edit-content-container">
-      <table>
       <%
-        if(result.length > 0){
+      if(result.length > 0){
       %>
-          <th>선교회</th>
+      <h3><%=result[0].grade%>청년선교회 연간행사 편집</h3>
+      <table class="plannerEditor">
           <th>월</th>
           <th>주</th>
           <th>주일 모임</th>
           <th>화요 모임</th>
           <th>활성화</th>
       <%
+            let color = 0;
           for(let i=0;i<result.length;i++){
             let checkFlag = result[i].display == true ? 'checked' : ' ';
             let no = result[i].no;
+            if(i%5 == 0){
+              color = (color == 0) ? 1 : 0;
+            }
       %>
-            <tr>
-              <td><%=result[i].grade%></td>
+            <tr class="plannerBackground<%=color%>">
               <td><%=result[i].month%></td>
               <td><%=result[i].week%></td>
               <input type="hidden" id="no-<%=i%>" value='<%=no%>'>
-              <td><input type="text" id="sunday-<%=no%>" value="<%=result[i].sundayContent%>"></td>
-              <td><input type="text" id="tuesday-<%=no%>" value="<%=result[i].tuesdayContent%>"></td>
+              <td class="inputTd"><input type="text" id="sunday-<%=no%>" value="<%=result[i].sundayContent%>"></td>
+              <td class="inputTd"><input type="text" id="tuesday-<%=no%>" value="<%=result[i].tuesdayContent%>"></td>
               <td><input type="checkbox" id="display-<%=no%>" <%=checkFlag%> ></td>
             </tr>
       <%
           }
+      %>
+      </table>
+      <%
         }
       %>
-    </table>
     <button type="button" id="submit">저장</button>
     </div>
   </section>

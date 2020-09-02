@@ -2,7 +2,7 @@
   <section class="edit-content">
     <div class="edit-content-container">
       <form action="/board/view" method="get">
-        일시 <input type="date" id="date" name="date" min="2020-01-01" max="2048-12-31">
+        <input type="date" id="date" name="date" min="2020-01-01" max="2048-12-31">
         <select name="grade" id='gradeBox'>
           <option value="">선교회</option>
           <option value="1">1</option>
@@ -34,6 +34,7 @@
         <br>
         <button type="submit">조회</button>
       </form>
+      <hr>
       <%
       if(results !== '' && results.length > 0){
 
@@ -63,9 +64,6 @@
 
       %>
       <h3><%=month%>월 데이터</h3>
-      <!-- <h3><%=uniqueDateList%></h3>
-      <h3><%=classNum%></h3>
-      <h3><%=rowNum%></h3> -->
       <table id="mainTable">
         <tbody>
         <th>낮모임 인원</th>

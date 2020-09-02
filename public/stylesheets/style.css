@@ -3,6 +3,7 @@
   --text-color : #465CEF; */
 	--theme-color: #465cef;
 	--text-color: white;
+	--bright-theme-color: #ff83da;
 }
 
 body {
@@ -28,8 +29,14 @@ button {
 	background-color: var(--text-color);
 }
 a:hover,
-button:hover {
+button:hover,
+input[type="checkbox"]:hover {
 	cursor: pointer;
+}
+hr {
+	width: 100%;
+	border: 0.5px solid var(--theme-color);
+	margin: 20px auto;
 }
 /***************
 *
@@ -102,6 +109,16 @@ button:hover {
 	width: 100%;
 	text-align: right;
 }
+/***************
+*
+* Planner Page CSS
+*
+**************/
+.plannerBackground0 {
+	/* background-color: /val(--bright-theme-color); */
+	background-color: #f0c0f1;
+}
+
 /***************
 *
 * Editor Page CSS
@@ -196,22 +213,23 @@ button:hover {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 70vw;
+	width: 90vw;
 	text-align: center;
 	font-size: 17px;
 	border-bottom: 1px solid var(--theme-color);
 }
+/*input type ="date" style*/
 .edit-content-container #date {
 	background: none;
+	font-size: 17px;
 	border: 1px solid var(--theme-color);
 }
 .edit-content-container select {
-	/* display: inline-block; */
 	border: none;
 	background: none;
 	border: 1px solid var(--theme-color);
 	margin-top: 1.5em;
-	font-size: inherit;
+	font-size: 17px;
 	width: 100%;
 }
 .edit-content-container input {
@@ -219,9 +237,6 @@ button:hover {
 	margin-top: 1.5em;
 	font-size: inherit;
 	border: 1.2px solid var(--theme-color);
-}
-.editUser-modify input {
-	width: 2em;
 }
 .edit-content-container table {
 	width: 100%;
@@ -247,6 +262,10 @@ td {
 	border: 1px solid var(--theme-color);
 	text-align: center;
 }
+.edit-content-container input[type="checkbox"] {
+	width: 1.5em;
+	height: 1.5em;
+}
 .edit-content-container button {
 	margin-top: 2em;
 	margin-bottom: 2em;
@@ -255,9 +274,15 @@ td {
 	color: white;
 	width: 200px;
 }
+.editUser-modify input {
+	width: 2em;
+}
 @media (min-width: 768px) {
 	.login-container {
 		width: 300px;
+	}
+	.edit-content-container {
+		max-width: 1000px;
 	}
 }
 @media (max-width: 768px) {
@@ -266,5 +291,8 @@ td {
 	}
 	.edit-content-container th {
 		font-size: 12px;
+	}
+	.plannerEditor input {
+		width: 80px;
 	}
 }
