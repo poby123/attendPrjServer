@@ -24,15 +24,17 @@ router.get("/", (req, res) => {
 					grade: req.session.grade,
 				});
 			} else {
+				let noticeParameter = "";
 				if (result.length > 0) {
-					res.render("notice", {
-						title: "Edit Notice",
-						msg: "",
-						menu: constData.nav[req.session.auth],
-						notice: result[0].notice,
-						grade: req.session.grade,
-					});
+					noticeParameter = result[0].notice;
 				}
+				res.render("notice", {
+					title: "Edit Notice",
+					msg: "",
+					menu: constData.nav[req.session.auth],
+					notice: noticeParameter,
+					grade: req.session.grade,
+				});
 			}
 		});
 	} else {
