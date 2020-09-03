@@ -11,7 +11,6 @@
           <option value="4">4</option>
           <option value="5">5</option>
         </select>
-        <br>
         <select name="class">
           <option value="">기관</option>
           <option value="1">1</option>
@@ -33,7 +32,14 @@
         <br>
         <input type="text" name="username" placeholder="name"><br>
         <input type="text" name="password" placeholder="password"><br>
-        <input type="text" name="auth" placeholder="auth"><br>
+        <select name="auth" id="">
+          <option value="0">일반 회원</option>
+          <option value="1">기관장단</option>
+          <option value="2">선교회 임원, 회장단</option>
+          <option value="3">연합회 임원, 회장단</option>
+          <option value="4">관리자</option>
+        </select>
+        <br>
         <button type="submit" name="button">추가 저장하기</button>
       </form>
     </div>

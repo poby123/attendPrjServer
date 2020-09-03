@@ -31,20 +31,24 @@ router.get("/", (req, res) => {
  *
  ***********************/
 router.get("/editUser", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
-		connection.query("SELECT username, grade, class, auth FROM tbluser", (err, results) => {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
+		let query = "SELECT username, grade, class, auth FROM tbluser";
+		if (req.session.auth === constData.executivesAuth) {
+			query += " where grade=" + req.session.grade;
+		}
+		connection.query(query, (err, results) => {
 			if (err) {
 				res.render("index", {
 					title: "admin Page",
 					msg: "error is occured!",
-					menu: constData.nav[constData.adminAuth],
+					menu: constData.nav[req.session.auth],
 				});
 			} else {
 				res.render("editUser", {
 					title: "admin Page",
 					msg: "",
 					results: results,
-					menu: constData.nav[constData.adminAuth],
+					menu: constData.nav[req.session.auth],
 				});
 			}
 		});
@@ -61,7 +65,7 @@ router.get("/editUser", (req, res) => {
  *
  ***********************/
 router.post("/editUser", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		connection.query("SELECT username FROM tbluser", (err, results) => {
 			if (err) {
 				console.log(err);
@@ -72,6 +76,11 @@ router.post("/editUser", (req, res) => {
 					let namegrade = username + "grade";
 					let nameclass = username + "class";
 					let nameauth = username + "auth";
+
+					//to prevent executives change member to other grade.
+					if (req.session.auth === constData.executivesAuth && req.body[namegrade] != req.session.grade) {
+						continue;
+					}
 					connection.query("UPDATE tbluser SET grade=?, class=?, auth=? WHERE username=?", [req.body[namegrade], req.body[nameclass], req.body[nameauth], username], (err, result) => {
 						if (err) {
 							console.log(err);
@@ -94,7 +103,7 @@ router.post("/editUser", (req, res) => {
  *
  ***********************/
 router.get("/editUser/delete", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		//console.log(req.query.target);
 
 		//for preventing delete admin self.
@@ -123,9 +132,9 @@ router.get("/editUser/delete", (req, res) => {
  *
  ***********************/
 router.post("/editUser/add", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
+	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		//prevent add admin selves.
-		if (req.body.username === req.session.username) {
+		if (req.body.username === req.session.username || req.body.grade != req.session.grade) {
 			res.redirect("/admin/editUser");
 		} else {
 			connection.query(
