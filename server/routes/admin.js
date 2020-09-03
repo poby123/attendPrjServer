@@ -33,9 +33,12 @@ router.get("/", (req, res) => {
 router.get("/editUser", (req, res) => {
 	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
 		let query = "SELECT username, grade, class, auth FROM tbluser";
+
+		//if executives, show data of executives's grade.
 		if (req.session.auth === constData.executivesAuth) {
 			query += " where grade=" + req.session.grade;
 		}
+		//get Data
 		connection.query(query, (err, results) => {
 			if (err) {
 				res.render("index", {
@@ -43,8 +46,15 @@ router.get("/editUser", (req, res) => {
 					msg: "error is occured!",
 					menu: constData.nav[req.session.auth],
 				});
-			} else {
+			} else if (req.session.auth === constData.adminAuth) {
 				res.render("editUser", {
+					title: "admin Page",
+					msg: "",
+					results: results,
+					menu: constData.nav[req.session.auth],
+				});
+			} else if (req.session.auth === constData.executivesAuth) {
+				res.render("editUser_Executives", {
 					title: "admin Page",
 					msg: "",
 					results: results,
@@ -137,10 +147,14 @@ router.post("/editUser/add", (req, res) => {
 		if (req.body.username === req.session.username || req.body.grade != req.session.grade) {
 			res.redirect("/admin/editUser");
 		} else {
+			let targetGrade = req.body.grade;
+			if (req.session.auth === constData.executivesAuth) {
+				targetGrade = req.session.grade;
+			}
 			connection.query(
 				`INSERT INTO tbluser (username, userpass, grade, class, auth)
       VALUES( ? , ? , ? , ? , ? )`,
-				[req.body.username, req.body.password, req.body.grade, req.body.class, req.body.auth],
+				[req.body.username, req.body.password, targetGrade, req.body.class, req.body.auth],
 				(error, results) => {
 					if (error) {
 						console.log(error);
