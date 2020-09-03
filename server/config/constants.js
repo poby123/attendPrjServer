@@ -18,6 +18,7 @@ module.exports = {
 			{ nav: "서기 데이터 보기", navLink: "/board/view" },
 			{ nav: "선교회 기관장단 편집", navLink: "/admin/editUser" },
 			{ nav: "연간 행사 편집", navLink: "/planner" },
+			{ nav: "공지사항 편집", navLink: "/notice" },
 			{ nav: "로그아웃", navLink: "/auth/signout" },
 		],
 		writer: [

@@ -1,9 +1,14 @@
 <%- include('./partials/header.ejs'); %>
   <section class="edit-content">
     <div class="edit-content-container">
+      <div class="notice-container">
+        <h3>공지사항</h3> <br><br>
+        <%=notice%>
+      </div>
       <%
         if(result !== '' && result.length > 0){
       %>
+          <hr>
           <h3><%=result[0].month%>월 일정</h3>
           <table>
             <th>주</th>

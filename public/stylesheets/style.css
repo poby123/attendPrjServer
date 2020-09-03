@@ -277,6 +277,12 @@ td {
 .editUser-modify input {
 	width: 2em;
 }
+/*Notice Edit*/
+#noticeEditArea {
+	width: 80vw;
+	font-size: 17px;
+}
+
 @media (min-width: 768px) {
 	.login-container {
 		width: 300px;
