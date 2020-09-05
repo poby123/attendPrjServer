@@ -40,8 +40,7 @@ router.post("/signin", (req, res) => {
 
 			//auth saving.
 			//the array of 0 index is must be false.
-			let authList = ["", constData.writerAuth, constData.executivesAuth, constData.executivesAuth, constData.adminAuth];
-			req.session.auth = authList[results[0].auth]; //save auth at session.
+			req.session.auth = constData.authList[Number(results[0].auth)]; //save auth at session.
 
 			//session saving.
 			req.session.save(function () {

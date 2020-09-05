@@ -87,7 +87,7 @@
       if(name) targetObject.push(name);
     }
     $.ajax({
-      url: '/admin/editClassMember/add',
+      url: '/class/editClassMember/add',
       type: 'POST',
       contentType:'application/json',
       data: JSON.stringify(targetObject),
@@ -109,7 +109,7 @@
       let id = $(this).attr('id');
       if (confirm('출석체크 도중, 멤버를 편집하는 경우, 출석체크가 저장되지 않습니다. ' +
           id + '님을 정말로 삭제하시겠습니까?')) {
-        location.href = "/admin/editClassMember/delete?target=" + id + "&location=board";
+        location.href = "/class/editClassMember/delete?target=" + id;
       } else {
         return;
       }
@@ -144,7 +144,7 @@
     console.log(targetObject);
 
     $.ajax({
-      url: '/board/save',
+      url: '/class/board/save',
       type: 'PUT',
       contentType:'application/json',
       data: JSON.stringify(targetObject),

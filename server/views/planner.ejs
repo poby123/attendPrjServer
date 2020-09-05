@@ -54,7 +54,7 @@
     if(result === '0'){
       console.log(result);
       if(confirm('연간 행사표가 존재하지 않습니다. 새로 만드시겠습니까?')){
-        location.replace('/planner/make');
+        location.replace('/grade/planner/make');
       }
     }
     else{
@@ -72,7 +72,7 @@
           target.push(row);
         }
         $.ajax({
-          url: '/planner/save',
+          url: '/grade/planner/save',
           type: 'PUT',
           contentType:'application/json',
           data: JSON.stringify(target),

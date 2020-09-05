@@ -1,341 +1,208 @@
-/*
-
-  The Admin Router For only Administor's Signin, Signout, Member Editing.
-
-*/
-var express = require("express");
-var mysql = require("mysql");
-const session = require("express-session");
-var xl = require("excel4node"); /*https://www.npmjs.com/package/excel4node*/
+var express = require('express');
+var mysql = require('mysql');
+const session = require('express-session');
 var router = express.Router();
 
-const dbConfig = require("../config/database.js");
-const sessionAuth = require("../config/session.js");
-const constData = require("../config/constants.js");
+const dbConfig = require('../config/database.js');
+const sessionAuth = require('../config/session.js');
+const constData = require('../config/constants.js');
 
 const connection = mysql.createPool(dbConfig);
 
 router.use(session(sessionAuth));
 
 /* GET home page. */
-router.get("/", (req, res) => {
-	res.redirect("/");
+router.get('/', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    res.redirect('/admin/state'); //editting state set as default
+  } else {
+    res.redirect('/');
+  }
 });
 
-///////////////////////////////////////// Edit User Start ////////////////////////////////////////////
-/*****************
- **
- *
- * editUser Router
- *
- *
- ***********************/
-router.get("/editUser", (req, res) => {
-	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
-		let query = "SELECT username, grade, class, auth FROM tbluser";
-
-		//if executives, show data of executives's grade.
-		if (req.session.auth === constData.executivesAuth) {
-			query += " where grade=" + req.session.grade;
-		}
-		//get Data
-		connection.query(query, (err, results) => {
-			if (err) {
-				res.render("index", {
-					title: "admin Page",
-					msg: "error is occured!",
-					menu: constData.nav[req.session.auth],
-				});
-			} else if (req.session.auth === constData.adminAuth) {
-				res.render("editUser", {
-					title: "admin Page",
-					msg: "",
-					results: results,
-					menu: constData.nav[req.session.auth],
-				});
-			} else if (req.session.auth === constData.executivesAuth) {
-				res.render("editUser_Executives", {
-					title: "admin Page",
-					msg: "",
-					results: results,
-					menu: constData.nav[req.session.auth],
-				});
-			}
-		});
-	} else {
-		res.redirect("/");
-	}
+router.get('/state', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    res.render('admin', {
+      title: 'Manmin Youth | Admin',
+      msg: '',
+      grade: req.session.grade,
+      group: req.session.class,
+      menu: constData.nav[req.session.auth],
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit User post router
- *
- *
- ***********************/
-router.post("/editUser", (req, res) => {
-	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
-		connection.query("SELECT username FROM tbluser", (err, results) => {
-			if (err) {
-				console.log(err);
-				res.redirect("/admin/editUser");
-			} else {
-				for (let i = 0; i < results.length; i++) {
-					let username = results[i].username;
-					let namegrade = username + "grade";
-					let nameclass = username + "class";
-					let nameauth = username + "auth";
+router.post('/state/save', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    let result = { result: true };
+    let targetGrade = Number(req.body.grade);
+    let targetClass = Number(req.body.class);
+    let memory = req.body.memory;
 
-					//to prevent executives change member to other grade.
-					if (req.session.auth === constData.executivesAuth && req.body[namegrade] != req.session.grade) {
-						continue;
-					}
-					connection.query("UPDATE tbluser SET grade=?, class=?, auth=? WHERE username=?", [req.body[namegrade], req.body[nameclass], req.body[nameauth], username], (err, result) => {
-						if (err) {
-							console.log(err);
-						}
-					});
-				}
-				res.redirect("/admin/editUser");
-			}
-		});
-	} else {
-		res.redirect("/");
-	}
+    if (targetGrade && targetClass) {
+      req.session.grade = targetGrade;
+      req.session.class = targetClass;
+      if (memory) {
+        connection.query(
+          'UPDATE tbluser SET grade=?, class=? WHERE username=?',
+          [targetGrade, targetClass, req.session.username],
+          (err) => {
+            if (err) {
+              console.log(err);
+            }
+          },
+        );
+      }
+      res.json(result);
+      res.end();
+    } else {
+      result.result = false;
+      res.json(result);
+      res.end();
+    }
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit User Delete Router
- *
- *
- ***********************/
-router.get("/editUser/delete", (req, res) => {
-	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
-		//console.log(req.query.target);
-
-		//for preventing delete admin self.
-		if (req.query.target === req.session.username) {
-			res.redirect("/admin/editUser");
-		} else {
-			connection.query("DELETE FROM tbluser WHERE username=?", [req.query.target], (error, results) => {
-				if (error) {
-					console.log(error);
-					res.redirect("/admin/editUser");
-				} else {
-					res.redirect("/admin/editUser");
-				}
-			});
-		}
-	} else {
-		res.redirect("/");
-	}
+//Edit User
+router.get('/editUser', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    connection.query(
+      'SELECT * FROM tbluser WHERE username != ? order by grade',
+      [req.session.username],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        res.render('adminEditUser', {
+          title: 'Manmin Youth | Admin',
+          msg: '',
+          results: result,
+          menu: constData.nav[req.session.auth],
+        });
+      },
+    );
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit User ADD Router
- *
- *
- ***********************/
-router.post("/editUser/add", (req, res) => {
-	if (req.session.auth === constData.executivesAuth || req.session.auth === constData.adminAuth) {
-		//prevent add admin selves.
-		if (req.body.username === req.session.username || req.body.grade != req.session.grade) {
-			res.redirect("/admin/editUser");
-		} else {
-			let targetGrade = req.body.grade;
-			if (req.session.auth === constData.executivesAuth) {
-				targetGrade = req.session.grade;
-			}
-			connection.query(
-				`INSERT INTO tbluser (username, userpass, grade, class, auth)
-      VALUES( ? , ? , ? , ? , ? )`,
-				[req.body.username, req.body.password, targetGrade, req.body.class, req.body.auth],
-				(error, results) => {
-					if (error) {
-						console.log(error);
-						res.redirect("/admin/editUser");
-					} else {
-						res.redirect("/admin/editUser");
-					}
-				}
-			);
-		} //admin add check end
-	} //session check end
-	else {
-		res.redirect("/");
-	}
+router.post('/editUser', (req, res) => {
+  res.redirect('/admin/editUser');
 });
 
-///////////////////////////////////////////Edit User End/////////////////////////////////////////////
+router.post('/editUser/save', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    connection.query(
+      'SELECT * FROM tbluser WHERE username != ?',
+      [req.session.username],
+      (err, results) => {
+        if (err) {
+          console.log(err);
+          res.redirect('/grade/editUser');
+        } else {
+          for (let i = 0; i < results.length; i++) {
+            let username = results[i].username;
+            let namegrade = username + 'grade';
+            let nameclass = username + 'class';
+            let nameauth = username + 'auth';
 
-///////////////////////////////////// Edit Class Member Start ////////////////////////////////////////////
-/*****************
- **
- *
- * edit Class Member Router
- *
- *
- ***********************/
-router.get("/editClassMember", (req, res) => {
-	if (req.session.auth === constData.adminAuth) {
-		let selectedGrade = req.session.grade;
-		let selectedClass = 0;
-		if (req.query.grade !== undefined && req.query.grade !== "") selectedGrade = req.query.grade;
-		if (req.query.class !== undefined && req.query.class !== "") selectedClass = req.query.class;
+            if (
+              req.body[namegrade] != results[i].grade ||
+              req.body[nameclass] != results[i].class ||
+              req.body[nameauth] != results[i].auth
+            ) {
+              connection.query(
+                'UPDATE tbluser SET grade=?, class=?, auth=? WHERE username=?',
+                [req.body[namegrade], req.body[nameclass], req.body[nameauth], username],
+                (err) => {
+                  if (err) {
+                    console.log(err);
+                  }
+                },
+              );
+            }
 
-		let selectQuery = "SELECT * FROM tblAttend WHERE grade=? ";
-		let arg = [selectedGrade];
-		if (selectedClass !== 0) {
-			selectQuery += "AND class = ? ";
-			arg.push(selectedClass);
-		}
-		selectQuery += " ORDER BY class ASC";
-
-		connection.query(selectQuery, arg, (err, results) => {
-			if (err) {
-				console.log(err);
-				res.render("editUser", {
-					title: "admin Page",
-					msg: "error is occured to get attend table",
-					menu: constData.nav[constData.adminAuth],
-				});
-			} else {
-				res.render("editClassMember", {
-					title: "admin Page",
-					msg: "",
-					results: results,
-					menu: constData.nav[constData.adminAuth],
-				});
-			}
-		});
-	} else {
-		res.redirect("/");
-	}
+            if (i === results.length - 1) {
+              res.redirect('/admin/editUser');
+            }
+          } //for
+        }
+      },
+    );
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit class member post router
- * It is allowed to class leader also.
- *
- *
- ***********************/
-router.post("/editClassMember", (req, res) => {
-	//It is allowed to all logined people.
-	if (req.session.auth) {
-		connection.query("SELECT name FROM tblAttend", (err, results) => {
-			if (err) {
-				console.log(err);
-				res.redirect("/admin/editClassMember");
-			} else {
-				for (let i = 0; i < results.length; i++) {
-					let name = results[i].name;
-					let namegrade = name + "grade";
-					let nameclass = name + "class";
-					connection.query("UPDATE tblAttend SET grade=?, class=? WHERE name=?", [req.body[namegrade], req.body[nameclass], name], (err, result) => {
-						if (err) {
-							console.log(err);
-						}
-					});
-				}
-				res.redirect("/admin/editClassMember");
-			}
-		});
-	} else {
-		res.redirect("/");
-	}
+router.post('/editUser/delete', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    let flag = {
+      result: true,
+    };
+    if (req.body.length > 0) {
+      //making query
+      let query = 'DELETE FROM tblUser WHERE username in (';
+      for (let i = 0; i < req.body.length; i++) {
+        query += '?';
+        if (i != req.body.length - 1) {
+          query += ', ';
+        } else {
+          query += ')';
+        }
+      }
+      connection.query(query, req.body, (err) => {
+        if (err) {
+          console.log(err);
+          flag.result = false;
+          res.json(flag);
+        } else {
+          res.json(flag);
+        }
+      });
+    } else {
+      res.json(flag);
+    }
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit Class Member Delete Router
- *
- *
- ***********************/
-router.get("/editClassMember/delete", (req, res) => {
-	//It is allowed to all logined people.
-	if (req.session.auth) {
-		//flag for distinguish where request is from. if it is from /board, this variable'll be true.
-		let isBoardAccess = req.query.location;
-		connection.query("DELETE FROM tblAttend WHERE name=?", [req.query.target], (error) => {
-			if (error) {
-				console.log(error);
-				isBoardAccess ? res.redirect("/board") : res.redirect("/admin/editClassMember");
-			} else {
-				isBoardAccess ? res.redirect("/board") : res.redirect("/admin/editClassMember");
-			}
-		});
-	} else {
-		res.redirect("/");
-	}
+router.post('/editUser/add', (req, res) => {
+  if (req.session.auth === constData.adminAuth) {
+    let query = `INSERT INTO tbluser (username, userpass, grade, class, auth) VALUES `;
+    let args = [];
+    for(let i=0;i<req.body.length;i++){
+
+      if(req.body[i].name && req.body[i].password && req.body[i].grade && req.body[i].class){
+        args.push(req.body[i].name);
+        args.push(req.body[i].password);
+        args.push(req.body[i].grade);
+        args.push(req.body[i].class);
+        args.push(req.body[i].auth);
+
+        query += ` (?,?,?,?,?)`;
+        if(i!=req.body.length-1){
+          query += `,`;
+        }
+      }
+    }
+    connection.query(query, args, (err)=>{
+      let flag = {result : true};
+      if(err){
+        console.log(err);
+        flag.result = false;
+        res.json(flag);
+      }else{
+        res.json(flag);
+      }
+    });
+  } else {
+    res.redirect('/');
+  }
 });
 
-/*****************
- **
- *
- * Edit Class Member ADD Router
- *
- *
- ***********************/
-router.post("/editClassMember/add", (req, res) => {
-	if (req.session.auth) {
-		//name이라는 이름으로 한 명만 들어오는 경우 -> from admin
-		if (req.body.name) {
-			connection.query(
-				`INSERT INTO tblAttend (name, grade, class)
-      VALUES( ? , ? , ? )`,
-				[req.body.name, req.body.grade, req.body.class],
-				(error) => {
-					if (error) {
-						console.log(error);
-						res.redirect("/admin/editClassMember");
-					} else {
-						res.redirect("/admin/editClassMember?grade=" + req.body.grade + "&class=" + req.body.class);
-					}
-				}
-			);
-		} //if(req.body.name) end
-		//여러 명이 들어오는 경우.
-		else if (req.body) {
-			let sqlQuery = `INSERT INTO tblattend (name, grade, class) VALUES `;
-			let userGrade = req.session.grade;
-			let userClass = req.session.class;
-			let queryArgs = [];
-
-			for (let i = 0; i < req.body.length; i++) {
-				queryArgs.push(req.body[i]);
-				queryArgs.push(userGrade);
-				queryArgs.push(userClass);
-
-				sqlQuery += " ( ?,  ?,  ?) ";
-				if (i != req.body.length - 1) {
-					sqlQuery += ",";
-				}
-			}
-			sqlQuery += ";";
-			connection.query(sqlQuery, queryArgs, (err) => {
-				let result = { result: true };
-				if (err) {
-					console.log(err);
-					result.result = false;
-				}
-				res.json(result);
-			});
-		} //if(req.body) end
-	} //session check end
-	else {
-		res.redirect("/");
-	}
-});
-
-////////////////////////////////////Edit User End/////////////////////////////////////////////
-
-//
 module.exports = router;

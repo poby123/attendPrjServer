@@ -1,8 +1,3 @@
-/*
-
-  The Board Router for sending tblAttend to client and saving request data.
-
-*/
 var express = require("express");
 var mysql = require("mysql");
 const session = require("express-session");
@@ -16,12 +11,8 @@ const connection = mysql.createPool(dbConfig);
 
 router.use(session(sessionAuth));
 
-/*******************
-
-  Send Attend Board data to Client
-
-*********************/
-router.get("/", (req, res) => {
+//Attendance Check Board
+router.get("/board", (req, res) => {
 	if (req.session.auth) {
 		connection.query("SELECT * FROM tblAttend where class = ? AND grade = ?", [req.session.class, req.session.grade], (err, results) => {
 			if (err) {
@@ -50,106 +41,7 @@ router.get("/", (req, res) => {
 	}
 });
 
-/////////////////////////////////// View Data Start //////////////////////////////////////////////
-router.get("/view", (req, res) => {
-	if (req.session.auth) {
-		let date = new Date();
-		const current = {
-			year: date.getFullYear(),
-			month: date.getMonth() + 1,
-			date: date.getDate(),
-		};
-		let targetGrade = req.session.grade;
-		let targetClass = req.session.class;
-		let targetYear = current.year;
-		let targetMonth = current.month;
-		let targetDate = current.date;
-
-		const isValid = (arg) => {
-			return arg != "" && arg != undefined;
-		};
-
-		//if query parameter is exist, change target variable to query arguments.
-		if (isValid(req.query.grade)) {
-			targetGrade = req.query.grade;
-		}
-		if (isValid(req.query.class)) {
-			targetClass = req.query.class;
-		}
-		if (isValid(req.query.date)) {
-			let d = new Date(req.query.date);
-			targetYear = d.getFullYear();
-			targetMonth = d.getMonth() + 1;
-			targetDate = d.getDate();
-		}
-
-		//this "0" means all class
-		if (targetClass === "0") {
-			//get grade data
-			console.log("get Grade View Data");
-			connection.query(
-				`SELECT * FROM tblTotal WHERE grade=? AND
-      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate ASC, class ASC`,
-				[targetGrade, targetYear, targetMonth],
-				(err, results) => {
-					if (err) {
-						console.log(err);
-						res.render("view", {
-							title: "View",
-							msg: "error is occured",
-							results: "",
-							menu: constData.nav[req.session.auth],
-						});
-					} else {
-						res.render("view", {
-							title: "View",
-							msg: "",
-							results: results,
-							menu: constData.nav[req.session.auth],
-						});
-					}
-				}
-			); //query end
-		} else {
-			//get class data
-			console.log("get class view data");
-			connection.query(
-				`SELECT * FROM tblTotal WHERE grade=? AND class=? AND
-      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate`,
-				[targetGrade, targetClass, targetYear, targetMonth],
-				(err, results) => {
-					if (err) {
-						console.log(err);
-						res.render("view", {
-							title: "View",
-							msg: "error is occured",
-							results: "",
-							menu: constData.nav[req.session.auth],
-						});
-					} else {
-						res.render("view", {
-							title: "View",
-							msg: "",
-							results: results,
-							menu: constData.nav[req.session.auth],
-						});
-					}
-				}
-			); //query end
-		}
-	} else {
-		res.redirect("/");
-	}
-});
-
-/////////////////////////////////// View Data End //////////////////////////////////////////////
-
-/*******************
-
-  Save Requseted Data
-
-*********************/
-router.put("/save", (req, res, next) => {
+router.put("/board/save", (req, res) => {
 	console.log("/board/save router is called");
 	let isNoError = true;
 	let date = new Date();
@@ -290,6 +182,177 @@ router.put("/save", (req, res, next) => {
 		console.log("session does not exist!");
 		req.get("/");
 	}
-}); //board save end
+});
+
+//View attendance data
+router.get("/board/view", (req, res) => {
+	if (req.session.auth) {
+		let date = new Date();
+		const current = {
+			year: date.getFullYear(),
+			month: date.getMonth() + 1,
+			date: date.getDate(),
+		};
+		let targetGrade = req.session.grade;
+		let targetClass = req.session.class;
+		let targetYear = current.year;
+		let targetMonth = current.month;
+		let targetDate = current.date;
+
+		const isValid = (arg) => {
+			return arg != "" && arg != undefined;
+		};
+
+		//if query parameter is exist, change target variable to query arguments.
+		if (isValid(req.query.grade)) {
+			targetGrade = req.query.grade;
+		}
+		if (isValid(req.query.class)) {
+			targetClass = req.query.class;
+		}
+		if (isValid(req.query.date)) {
+			let d = new Date(req.query.date);
+			targetYear = d.getFullYear();
+			targetMonth = d.getMonth() + 1;
+			targetDate = d.getDate();
+		}
+
+		//this "0" means all class
+		if (targetClass === "0") {
+			//get grade data
+			console.log("get Grade View Data");
+			connection.query(
+				`SELECT * FROM tblTotal WHERE grade=? AND
+      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate ASC, class ASC`,
+				[targetGrade, targetYear, targetMonth],
+				(err, results) => {
+					if (err) {
+						console.log(err);
+						res.render("view", {
+							title: "View",
+							msg: "error is occured",
+							results: "",
+							menu: constData.nav[req.session.auth],
+						});
+					} else {
+						res.render("view", {
+							title: "View",
+							msg: "",
+							results: results,
+							menu: constData.nav[req.session.auth],
+						});
+					}
+				}
+			); //query end
+		} else {
+			//get class data
+			console.log("get class view data");
+			connection.query(
+				`SELECT * FROM tblTotal WHERE grade=? AND class=? AND
+      YEAR(regDate)=? AND MONTH(regDate)=? ORDER BY regDate`,
+				[targetGrade, targetClass, targetYear, targetMonth],
+				(err, results) => {
+					if (err) {
+						console.log(err);
+						res.render("view", {
+							title: "View",
+							msg: "error is occured",
+							results: "",
+							menu: constData.nav[req.session.auth],
+						});
+					} else {
+						res.render("view", {
+							title: "View",
+							msg: "",
+							results: results,
+							menu: constData.nav[req.session.auth],
+						});
+					}
+				}
+			); //query end
+		}
+	} else {
+		res.redirect("/");
+	}
+});
+
+//Edit Class Member
+router.post("/editClassMember", (req, res) => {
+	if (req.session.auth) {
+		connection.query("SELECT name FROM tblAttend", (err, results) => {
+			if (err) {
+				console.log(err);
+				res.redirect("/class/board");
+			} else {
+				for (let i = 0; i < results.length; i++) {
+					let name = results[i].name;
+					let namegrade = name + "grade";
+					let nameclass = name + "class";
+					connection.query("UPDATE tblAttend SET grade=?, class=? WHERE name=?", [req.body[namegrade], req.body[nameclass], name], (err, result) => {
+						if (err) {
+							console.log(err);
+						}
+					});
+				}
+				res.redirect("/class/board");
+			}
+		});
+	} else {
+		res.redirect("/");
+	}
+});
+
+router.get("/editClassMember/delete", (req, res) => {
+	//It is allowed to all logined people.
+	if (req.session.auth) {
+		//flag for distinguish where request is from. if it is from /board, this variable'll be true.
+		connection.query("DELETE FROM tblAttend WHERE name=?", [req.query.target], (error) => {
+			if (error) {
+				console.log(error);
+				res.redirect("/class/board");
+			} else {
+				res.redirect("/class/board");
+			}
+		});
+	} else {
+		res.redirect("/");
+	}
+});
+
+router.post("/editClassMember/add", (req, res) => {
+	if (req.session.auth) {
+		if (req.body) {
+			let sqlQuery = `INSERT INTO tblattend (name, grade, class) VALUES `;
+			let userGrade = req.session.grade;
+			let userClass = req.session.class;
+			let queryArgs = [];
+
+			for (let i = 0; i < req.body.length; i++) {
+				queryArgs.push(req.body[i]);
+				queryArgs.push(userGrade);
+				queryArgs.push(userClass);
+
+				sqlQuery += " ( ?,  ?,  ?) ";
+				if (i != req.body.length - 1) {
+					sqlQuery += ",";
+				}
+			}
+			sqlQuery += ";";
+			connection.query(sqlQuery, queryArgs, (err) => {
+				let result = { result: true };
+				if (err) {
+					console.log(err);
+					result.result = false;
+				}
+				res.json(result);
+			});
+		} else {
+			let result = { result: false };
+			res.json(result);
+		}
+	} else {
+		res.redirect("/");
+	}
+});
 
 module.exports = router;

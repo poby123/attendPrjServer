@@ -2,15 +2,7 @@
   <section class="edit-content">
     <div class="edit-content-container">
       <h3>앱 사용자 추가</h3>
-      <form class="editUser-add" action="/admin/editUser/add" method="post">
-        <select name="grade">
-          <option value="">선교회</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
+      <form class="editUser-add" action="/grade/editUser/add" method="post">
         <select name="class">
           <option value="">기관</option>
           <option value="1">1</option>
@@ -29,26 +21,22 @@
           <option value="14">14</option>
           <option value="15">15</option>
         </select>
-        <br>
-        <input type="text" name="username" placeholder="name"><br>
-        <input type="text" name="password" placeholder="password"><br>
         <select name="auth" id="">
           <option value="0">일반 회원</option>
           <option value="1">기관장단</option>
           <option value="2">선교회 임원, 회장단</option>
           <option value="3">연합회 임원, 회장단</option>
-          <option value="4">관리자</option>
         </select>
-        <br>
+        <input type="text" name="username" placeholder="name">
+        <input type="text" name="password" placeholder="password">
         <button type="submit" name="button">추가 저장하기</button>
       </form>
     </div>
     <div class="edit-content-container">
       <h3>앱 사용자 수정</h3>
-      <form class="editUser-modify" action="/admin/editUser" method="post">
+      <form class="editUser-modify" action="/grade/editUser" method="post">
         <table>
           <th>이름</th>
-          <th>선교회</th>
           <th>기관</th>
           <th>권한</th>
           <th>-</th>
@@ -59,16 +47,14 @@
           %>
           <tr>
             <td><%=results[i].username%></td>
-            <td><input type="text" name="<%=results[i].username%>grade" value="<%=results[i].grade%>"></td>
+            <input type="hidden" name="<%=results[i].username%>grade" value="<%=results[i].grade%>">
             <td><input type="text" name="<%=results[i].username%>class" value="<%=results[i].class%>"></td>
-            <!-- <td><input type="text" name="<%=results[i].username%>auth" value="<%=results[i].auth%>"></td> -->
             <td>
               <select name="<%=results[i].username%>auth" id="">
                 <option value="0" <%=authList[0]%> >일반 회원</option>
                 <option value="1" <%=authList[1]%> >기관장단</option>
                 <option value="2" <%=authList[2]%> >선교회 임원, 회장단</option>
                 <option value="3" <%=authList[3]%> >연합회 임원, 회장단</option>
-                <option value="4" <%=authList[4]%> >관리자</option>
               </select>
             </td>
             <td><a class="deleteButton" id="<%=results[i].username%>"><i class="fas fa-user-minus"></i></a></td>
@@ -96,7 +82,7 @@
       let id = $(this).attr('id');
       if (confirm('저장을 누르지 않고 확인을 누르시는 경우, 변경한 값이 저장되지 않고 초기화 됩니다. ' +
           id + '님을 정말로 삭제하시겠습니까? 취소를 누르시면 취소됩니다.')) {
-        location.href = "/admin/editUser/delete?target=" + id;
+        location.href = "/grade/editUser/delete?target=" + id;
       } else {
         return;
       }

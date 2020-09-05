@@ -1,42 +1,42 @@
 :root {
-	/* --theme-color : #C3E0FF;
+  /* --theme-color : #C3E0FF;
   --text-color : #465CEF; */
-	--theme-color: #465cef;
-	--text-color: white;
-	--bright-theme-color: #ff83da;
+  --theme-color: #465cef;
+  --text-color: white;
+  --bright-theme-color: #ff83da;
 }
 
 body {
-	margin: 0;
+  margin: 0;
 }
 h1,
 h2,
 h3,
 h4,
 h5 {
-	display: inline-block;
-	margin: 0;
+  display: inline-block;
+  margin: 0;
 }
 a {
-	text-decoration: none;
+  text-decoration: none;
 }
 ul {
-	list-style: none;
+  list-style: none;
 }
 button {
-	background: none;
-	border: none;
-	background-color: var(--text-color);
+  background: none;
+  border: none;
+  background-color: var(--text-color);
 }
 a:hover,
 button:hover,
-input[type="checkbox"]:hover {
-	cursor: pointer;
+input[type='checkbox']:hover {
+  cursor: pointer;
 }
 hr {
-	width: 100%;
-	border: 0.5px solid var(--theme-color);
-	margin: 20px auto;
+  width: 100%;
+  border: 0.5px solid var(--theme-color);
+  margin: 20px auto;
 }
 /***************
 *
@@ -44,58 +44,58 @@ hr {
 *
 **************/
 .login {
-	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: var(--text-color);
-	color: var(--theme-color);
-	font-family: "Nanum Gothic", sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--text-color);
+  color: var(--theme-color);
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 .login-container {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	width: 70vw;
-	padding: 12vh 5vw;
-	text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 70vw;
+  padding: 12vh 5vw;
+  text-align: center;
 }
 .login-container .title {
-	margin-bottom: 0.2em;
-	font-size: 30px;
-	font-family: "Baloo Da 2", cursive;
+  margin-bottom: 0.2em;
+  font-size: 30px;
+  font-family: 'Baloo Da 2', cursive;
 }
 .login-container .fa-user {
-	border: 2px solid var(--theme-color);
-	border-radius: 50%;
-	font-size: 18px;
-	padding: 1em;
-	margin-bottom: 2em;
-	/* text-align: center; */
+  border: 2px solid var(--theme-color);
+  border-radius: 50%;
+  font-size: 18px;
+  padding: 1em;
+  margin-bottom: 2em;
+  /* text-align: center; */
 }
 .login-container input {
-	font-family: inherit;
-	font-weight: bold;
-	color: inherit;
-	border: none;
-	padding-left: 0.2em;
-	border: 1px solid var(--theme-color);
-	border-radius: 10px;
-	font-size: 15px;
-	height: 2em;
-	background: none;
-	margin-bottom: 1em;
-	width: 100%;
+  font-family: inherit;
+  font-weight: bold;
+  color: inherit;
+  border: none;
+  padding-left: 0.2em;
+  border: 1px solid var(--theme-color);
+  border-radius: 10px;
+  font-size: 15px;
+  height: 2em;
+  background: none;
+  margin-bottom: 1em;
+  width: 100%;
 }
 .login-container button {
-	width: 100%;
-	font-size: 15px;
-	margin-top: 2em;
-	background-color: var(--theme-color);
-	height: 3em;
-	color: white;
-	font-family: "Baloo Da 2", cursive;
+  width: 100%;
+  font-size: 15px;
+  margin-top: 2em;
+  background-color: var(--theme-color);
+  height: 3em;
+  color: white;
+  font-family: 'Baloo Da 2', cursive;
 }
 
 /***************
@@ -104,10 +104,10 @@ hr {
 *
 **************/
 #editToggleButton {
-	font-size: 25px;
-	font-weight: bold;
-	width: 100%;
-	text-align: right;
+  font-size: 25px;
+  font-weight: bold;
+  width: 100%;
+  text-align: right;
 }
 /***************
 *
@@ -115,8 +115,8 @@ hr {
 *
 **************/
 .plannerBackground0 {
-	/* background-color: /val(--bright-theme-color); */
-	background-color: #f0c0f1;
+  /* background-color: /val(--bright-theme-color); */
+  background-color: #f0c0f1;
 }
 
 /***************
@@ -125,180 +125,190 @@ hr {
 *
 **************/
 .edit-body {
-	height: 100vh;
-	/* background-color: var(--theme-color); */
-	color: var(--theme-color);
+  height: 100vh;
+  /* background-color: var(--theme-color); */
+  color: var(--theme-color);
 }
 .edit-nav {
-	padding-top: 0.5em;
-	width: 100vw;
-	top: 0;
-	left: 0;
-	position: fixed;
-	border: 1px solid blue;
-	background-color: var(--theme-color);
+  padding-top: 0.5em;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  position: fixed;
+  border: 1px solid blue;
+  background-color: var(--theme-color);
 }
 
 .edit-nav-container {
-	padding-left: 1em;
-	padding-right: 1em;
-	display: flex;
-	justify-content: space-between;
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
+  padding-left: 1em;
+  padding-right: 1em;
+  display: flex;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 /*Manmin Youth title*/
 #title {
-	font-family: "Baloo Da 2", cursive;
-	font-size: 25px;
-	line-height: 2em;
-	color: var(--text-color);
+  font-family: 'Baloo Da 2', cursive;
+  font-size: 25px;
+  line-height: 2em;
+  color: var(--text-color);
 }
 /*Toggle(Show, Hide) Button*/
 .toggle {
-	color: var(--text-color);
-	font-size: 25px;
-	background: none;
+  color: var(--text-color);
+  font-size: 25px;
+  background: none;
 }
 
 /*toggled ul tag*/
 .toggleTarget {
-	position: absolute;
-	background-color: white;
-	margin: 0;
-	padding: 0;
-	top: 0;
-	right: 0;
-	display: none;
-	height: 100vh;
-	width: 60vw;
-	border: 1px solid var(--theme-color);
-	align-items: center;
-	justify-content: center;
+  position: absolute;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  right: 0;
+  display: none;
+  height: 100vh;
+  width: 60vw;
+  border: 1px solid var(--theme-color);
+  align-items: center;
+  justify-content: center;
 }
 .toggleTarget li {
-	border-bottom: 1px solid var(--theme-color);
-	text-align: center;
-	width: 100%;
-	line-height: 2em;
-	display: inline-block;
-	margin: 0;
+  border-bottom: 1px solid var(--theme-color);
+  text-align: center;
+  width: 100%;
+  line-height: 2em;
+  display: inline-block;
+  margin: 0;
 }
 .toggleTarget a {
-	color: var(--theme-color);
+  color: var(--theme-color);
 }
 .toggleTarget #toggle-hide {
-	width: 100%;
-	height: 100%;
-	background-color: var(--theme-color);
-	text-align: left;
-	color: var(--text-color);
-	font-size: 45px;
-	font-weight: bold;
+  width: 100%;
+  height: 100%;
+  background-color: var(--theme-color);
+  text-align: left;
+  color: var(--text-color);
+  font-size: 45px;
+  font-weight: bold;
 }
 
 /*Content*/
 .edit-content {
-	margin-top: 15vh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	font-family: "Nanum Gothic", sans-serif;
+  margin-top: 15vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 .edit-content-container {
-	margin-top: 2vh;
-	margin-bottom: 2vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 90vw;
-	text-align: center;
-	font-size: 17px;
-	border-bottom: 1px solid var(--theme-color);
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 90vw;
+  text-align: center;
+  font-size: 17px;
+  border-bottom: 1px solid var(--theme-color);
 }
 /*input type ="date" style*/
 .edit-content-container #date {
-	background: none;
-	font-size: 17px;
-	border: 1px solid var(--theme-color);
+  background: none;
+  font-size: 17px;
+  border: 1px solid var(--theme-color);
 }
 .edit-content-container select {
-	border: none;
-	background: none;
-	border: 1px solid var(--theme-color);
-	margin-top: 1.5em;
-	font-size: 17px;
-	width: 100%;
+  border: none;
+  background: none;
+  border: 1px solid var(--theme-color);
+  margin-top: 1.5em;
+  font-size: 17px;
+  width: 100%;
 }
 .edit-content-container input {
-	display: inline-block;
-	margin-top: 1.5em;
-	font-size: inherit;
-	border: 1.2px solid var(--theme-color);
+  display: inline-block;
+  margin-top: 1.5em;
+  font-size: inherit;
+  border: 1.2px solid var(--theme-color);
 }
 .edit-content-container table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 1em;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
 }
 .edit-content-container th {
-	background-color: var(--theme-color);
-	border: 1px solid var(--text-color);
-	color: var(--text-color);
-	font-size: 15px;
+  background-color: var(--theme-color);
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+  font-size: 15px;
 }
 .edit-content-container td {
-	border: 1px solid var(--theme-color);
+  border: 1px solid var(--theme-color);
 }
 .edit-content-container th,
 td {
-	line-height: 3em;
-	width: 150px;
+  line-height: 3em;
+  width: 150px;
 }
 .edit-content-container table input {
-	margin: 0;
-	border: 1px solid var(--theme-color);
-	text-align: center;
+  margin: 0;
+  border: 1px solid var(--theme-color);
+  text-align: center;
 }
-.edit-content-container input[type="checkbox"] {
-	width: 1.5em;
-	height: 1.5em;
+.edit-content-container input[type='checkbox'] {
+  width: 1.5em;
+  height: 1.5em;
 }
 .edit-content-container button {
-	margin-top: 2em;
-	margin-bottom: 2em;
-	line-height: 3em;
-	background-color: var(--theme-color);
-	color: white;
-	width: 200px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  line-height: 3em;
+  background-color: var(--theme-color);
+  color: white;
+  width: 200px;
 }
 .editUser-modify input {
-	width: 2em;
+  width: 2em;
 }
 /*Notice Edit*/
 #noticeEditArea {
-	width: 80vw;
-	font-size: 17px;
+  width: 80vw;
+  font-size: 17px;
 }
-
+/*add User*/
+.addUserContainer {
+  display: flex;
+}
+.addUserContainer input {
+  flex: 1;
+  margin-right: 1em;
+}
+.addUserContainer select {
+  flex: 1;
+}
 @media (min-width: 768px) {
-	.login-container {
-		width: 300px;
-	}
-	.edit-content-container {
-		max-width: 1000px;
-	}
+  .login-container {
+    width: 300px;
+  }
+  .edit-content-container {
+    max-width: 1000px;
+  }
 }
 @media (max-width: 768px) {
-	.edit-content-container {
-		font-size: 12px;
-	}
-	.edit-content-container th {
-		font-size: 12px;
-	}
-	.plannerEditor input {
-		width: 80px;
-	}
+  .edit-content-container {
+    font-size: 12px;
+  }
+  .edit-content-container th {
+    font-size: 12px;
+  }
+  .plannerEditor input {
+    width: 80px;
+  }
 }
