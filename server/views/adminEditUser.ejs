@@ -115,14 +115,14 @@
         success: function (result) {
           if (result.result) {
             alert('추가되었습니다!');
-            location.replace(window.location.href)
+            location.replace(window.location.href);
           } else {
             alert('추가하는데에 실패했습니다.');
           }
         }
       });
     }
-    console.log(targetObject);
+    targetObject = [];
   }); 
 
 
@@ -148,6 +148,7 @@
           success: function (result) {
             if (result.result) {
               alert('삭제했습니다.');
+              location.replace(window.location.href);
             } else {
               alert('삭제에 실패했습니다.');
             }
