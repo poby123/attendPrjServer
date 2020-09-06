@@ -71,7 +71,7 @@ router.post('/state/save', (req, res) => {
 router.get('/editUser', (req, res) => {
   if (req.session.auth === constData.adminAuth) {
     connection.query(
-      'SELECT * FROM tbluser WHERE username != ? order by grade',
+      'SELECT * FROM tbluser WHERE username != ? ORDER BY grade, class',
       [req.session.username],
       (err, result) => {
         if (err) {
