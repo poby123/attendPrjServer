@@ -12,7 +12,7 @@
         <option value="5">5</option>
       </select>
       <br>
-      <select name="class">
+      <select name="class" id='classBox'>
         <option value="">기관</option>
         <option value="0">전체기관</option>
         <option value="1">1</option>
@@ -32,7 +32,7 @@
         <option value="15">15</option>
       </select>
       <br>
-      <button type="submit">조회</button>
+      <button id="browseDataButton" type="submit">조회</button>
     </form>
     <hr>
     <%
@@ -166,16 +166,18 @@
       msg = '';
     }
 
-    function getParam(sname) {
-      var params = location.search.substr(location.search.indexOf("?") + 1);
-      var sval = "";
-      params = params.split("&");
-      for (var i = 0; i < params.length; i++) {
-        temp = params[i].split("=");
-        if ([temp[0]] == sname) { sval = temp[1]; }
+    //to maintain select box state
+    $(document).ready(()=>{
+      let selectedGrade = getParam('grade');
+      let selectedClass = getParam('class');
+      if(selectedGrade){
+        // $('#gradeBox option:eq(' + Number(selectedGrade) + ')').attr('selected', 'selected');
+        $(`#gradeBox option[value="${selectedGrade}"]`).prop('selected', true);
       }
-      return sval;
-    }
+      if(selectedClass){
+        $(`#classBox option[value="${selectedClass}"]`).prop('selected', true);
+      }
+    });
 
     //Table to Excel File
     $('#viewDataDownloadButton').click(() => {

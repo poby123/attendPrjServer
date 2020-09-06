@@ -24,17 +24,14 @@ $('.toggle').click(function () {
   $('toggleTarget').css('display', 'flex');
 });
 
-//to maintain status of select box
-let selectedGrade = getParameterByName('grade');
-$('#gradeBox option:eq(' + selectedGrade + ')').attr('selected', 'selected');
-
-//to get status of select box
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, '\\$&');
-  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+//get parameter from url
+function getParam(sname) {
+  var params = location.search.substr(location.search.indexOf("?") + 1);
+  var sval = "";
+  params = params.split("&");
+  for (var i = 0; i < params.length; i++) {
+    temp = params[i].split("=");
+    if ([temp[0]] == sname) { sval = temp[1]; }
+  }
+  return sval;
 }
